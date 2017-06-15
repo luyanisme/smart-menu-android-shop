@@ -2,6 +2,7 @@ package com.example.luyan.smartmenu_shop.Widgt;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.util.TypedValue;
@@ -53,7 +54,7 @@ public class ChooseStandardPanel implements View.OnClickListener {
 
     TapDelegate tapDelegate;
 
-    public ChooseStandardPanel(Context context, CASEITEM caseItem) {
+    public ChooseStandardPanel(Context context, final CASEITEM caseItem) {
         // TODO Auto-generated constructor stub
         this.context = context;
         this.caseItem = caseItem;
@@ -76,16 +77,44 @@ public class ChooseStandardPanel implements View.OnClickListener {
         reduce = (RelativeLayout) dialog.findViewById(R.id.reduce_icon);
         reduce.setOnClickListener(this);
         orderNumView = (TextView) dialog.findViewById(R.id.case_order_num);
-        caseItem.getCaseStandardVals().get(0).setSelected(true);
-        caseItem.getCasePropertyVals().get(0).setSelected(true);
-        choosecasestandarditem = caseItem.getCaseStandardVals().get(0);
-        choosecasepropertyitem = caseItem.getCasePropertyVals().get(0);
+        if (caseItem.getOrderCases().size() != 0){
+            Long propertyId = caseItem.getOrderCases().get(caseItem.getOrderCases().size()-1).getCasepropertyitem().getCasePropertyValId();
+            Long standardId = caseItem.getOrderCases().get(caseItem.getOrderCases().size()-1).getCasestandarditem().getCaseStandardValId();
+            ArrayUtils.findPropertyId(propertyId,caseItem.getCasePropertyVals()).setSelected(true);
+            ArrayUtils.findStandardId(standardId,caseItem.getCaseStandardVals()).setSelected(true);
+            choosecasestandarditem = ArrayUtils.findStandardId(standardId,caseItem.getCaseStandardVals());
+            choosecasepropertyitem = ArrayUtils.findPropertyId(propertyId,caseItem.getCasePropertyVals());
+            addToCart.setVisibility(View.GONE);
+            orderNumOperate.setVisibility(View.VISIBLE);
+            orderNumView.setText(String.valueOf(caseItem.getOrderCases().get(caseItem.getOrderCases().size()-1).getOrderNum()));
+        } else {
+            caseItem.getCaseStandardVals().get(0).setSelected(true);
+            caseItem.getCasePropertyVals().get(0).setSelected(true);
+            choosecasestandarditem = caseItem.getCaseStandardVals().get(0);
+            choosecasepropertyitem = caseItem.getCasePropertyVals().get(0);
+        }
+
+        if (caseItem.getOrderNum() != 0){
+            totalNum = caseItem.getOrderNum();
+        }
         initFlowLayout(caseItem);
 
         dialog.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
+            }
+        });
+
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                for (int i = 0; i < caseItem.getCaseStandardVals().size(); i++) {
+                    caseItem.getCaseStandardVals().get(i).setSelected(false);
+                }
+                for (int i = 0; i < caseItem.getCasePropertyVals().size(); i++) {
+                    caseItem.getCasePropertyVals().get(i).setSelected(false);
+                }
             }
         });
     }
@@ -222,6 +251,7 @@ public class ChooseStandardPanel implements View.OnClickListener {
                 orderNumView.setText(String.valueOf(reduceOrderNum));
                 orderTag.setText(String.valueOf(totalNum));
                 caseItem.setOrderNum(totalNum);
+                //查找已添加的商品
                 ArrayUtils.findStandardCaseItem(standardProperty.getText().toString(), caseItem.getOrderCases()).setOrderNum(reduceOrderNum);
                 ArrayUtils.findStandardCaseItem(standardProperty.getText().toString(), orderedItems).setOrderNum(reduceOrderNum);
                 if (reduceOrderNum == 0) {

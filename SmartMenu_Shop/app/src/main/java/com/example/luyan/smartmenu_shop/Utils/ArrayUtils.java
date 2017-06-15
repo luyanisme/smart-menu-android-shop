@@ -1,6 +1,8 @@
 package com.example.luyan.smartmenu_shop.Utils;
 
 import com.example.luyan.smartmenu_shop.Metadata.CASEITEM;
+import com.example.luyan.smartmenu_shop.Metadata.CASEPROPERTYITEM;
+import com.example.luyan.smartmenu_shop.Metadata.CASESTANDARDITEM;
 
 import java.util.ArrayList;
 
@@ -10,10 +12,28 @@ import java.util.ArrayList;
 
 public class ArrayUtils {
 
-    public static CASEITEM isContainCaseId(CASEITEM caseitem, ArrayList<CASEITEM> caseitems) {
+    public static CASEITEM findCaseId(CASEITEM caseitem, ArrayList<CASEITEM> caseitems) {
         for (int i = 0; i < caseitems.size(); i++) {
             if (caseitem.getCaseId() == caseitems.get(i).getCaseId()) {
                 return caseitems.get(i);
+            }
+        }
+        return null;
+    }
+
+    public static CASESTANDARDITEM findStandardId(long id, ArrayList<CASESTANDARDITEM> casestandarditems) {
+        for (int i = 0; i < casestandarditems.size(); i++) {
+            if (id == casestandarditems.get(i).getCaseStandardValId()) {
+                return casestandarditems.get(i);
+            }
+        }
+        return null;
+    }
+
+    public static CASEPROPERTYITEM findPropertyId(long id, ArrayList<CASEPROPERTYITEM> casepropertyitems) {
+        for (int i = 0; i < casepropertyitems.size(); i++) {
+            if (id == casepropertyitems.get(i).getCasePropertyValId()) {
+                return casepropertyitems.get(i);
             }
         }
         return null;
