@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorWhite">
+
+    <!--用于填充高度-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"></RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+        android:layout_centerVertical="true">
+
+        <TextView
+            android:id="@+id/case_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18dp"
+            android:textColor="@color/colorBlack"
+            android:text="红烧河豚"/>
+
+        <TextView
+            android:id="@+id/standard_property"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="11dp"
+            android:textColor="@color/colorText"
+            android:text="(一条+微微辣)"/>
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/case_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="100dp"
+        android:layout_centerVertical="true"
+        android:textColor="@color/colorRed"
+        android:textSize="18dp"
+        android:text="256.0¥"/>
+
+    <TextView
+        android:id="@+id/case_num"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20dp"
+        android:layout_centerVertical="true"
+        android:textColor="@color/colorBlack"
+        android:textSize="16dp"
+        android:text="X2"/>
+</RelativeLayout>

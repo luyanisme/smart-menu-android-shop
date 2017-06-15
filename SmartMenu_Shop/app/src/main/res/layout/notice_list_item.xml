@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/notice_circle_icon"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="10dp"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="60dp"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/desk_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="6号桌"
+                android:textSize="18dp"
+                android:textColor="@color/colorBlack"/>
+
+            <TextView
+                android:id="@+id/notice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="正在呼叫服务员..."
+                android:textSize="13dp"
+                android:textColor="@color/colorText"/>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/is_dealed"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="70dp"
+            android:src="@drawable/dealed_icon"/>
+
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            android:src="@drawable/right_arrow_icon"/>
+    </RelativeLayout>
+
+</RelativeLayout>
