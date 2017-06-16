@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.luyan.smartmenu_shop.Common.Public;
 import com.example.luyan.smartmenu_shop.Metadata.CASEITEM;
 import com.example.luyan.smartmenu_shop.Metadata.CASEPROPERTYITEM;
 import com.example.luyan.smartmenu_shop.Metadata.CASESTANDARDITEM;
@@ -177,7 +178,7 @@ public class ChooseStandardPanel implements View.OnClickListener {
                     DHDensityUtil.dip2px(context, 10),
                     DHDensityUtil.dip2px(context, 10),
                     DHDensityUtil.dip2px(context, 10));
-            for (int i = 0; i < caseItem.getCaseStandardVals().size(); i++) {
+            for (int i = 0; i < caseItem.getCasePropertyVals().size(); i++) {
                 int ranHeight = DHDensityUtil.dip2px(context, 25);
                 ViewGroup.MarginLayoutParams mlp = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ranHeight);
                 mlp.setMargins(DHDensityUtil.dip2px(context, 5), 0, DHDensityUtil.dip2px(context, 5), DHDensityUtil.dip2px(context, 5));
@@ -216,6 +217,7 @@ public class ChooseStandardPanel implements View.OnClickListener {
                 orderNumOperate.setVisibility(View.VISIBLE);
                 orderNumView.setText(String.valueOf(orderNum));
                 if (tapDelegate != null) {
+                    Public.totalOrderNum ++;
                     tapDelegate.tap(caseIndex, orderNum);
                 }
                 orderTag.setVisibility(View.VISIBLE);
@@ -236,6 +238,7 @@ public class ChooseStandardPanel implements View.OnClickListener {
                 totalNum++;
                 orderNumView.setText(String.valueOf(addOrderNum));
                 if (tapDelegate != null) {
+                    Public.totalOrderNum ++;
                     tapDelegate.tap(caseIndex, addOrderNum);
                 }
                 ArrayUtils.findStandardCaseItem(standardProperty.getText().toString(), caseItem.getOrderCases()).setOrderNum(addOrderNum);
@@ -265,6 +268,7 @@ public class ChooseStandardPanel implements View.OnClickListener {
                     }
                 }
                 if (tapDelegate != null) {
+                    Public.totalOrderNum --;
                     tapDelegate.tap(caseIndex, reduceOrderNum);
                 }
                 break;
@@ -317,6 +321,7 @@ public class ChooseStandardPanel implements View.OnClickListener {
         }
     }
 
+    //浅拷贝
     private CASEITEM weakCopy(CASEITEM caseItem) {
         CASEITEM caseitem = new CASEITEM();
         caseitem.setCaseId(caseItem.getCaseId());

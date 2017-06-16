@@ -1,11 +1,11 @@
 package com.example.luyan.smartmenu_shop.Activity.Desk;
 
-import android.support.v7.app.AppCompatActivity;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -13,10 +13,11 @@ import android.widget.TextView;
 import com.example.luyan.smartmenu_shop.Activity.BaseActivity;
 import com.example.luyan.smartmenu_shop.Adapter.CaseAdapter;
 import com.example.luyan.smartmenu_shop.Adapter.CateAdapter;
+import com.example.luyan.smartmenu_shop.Adapter.OrderAdapter;
+import com.example.luyan.smartmenu_shop.Adapter.OrderedAdapter;
+import com.example.luyan.smartmenu_shop.Common.Public;
 import com.example.luyan.smartmenu_shop.Metadata.CASECATEITEM;
 import com.example.luyan.smartmenu_shop.Metadata.CASEITEM;
-import com.example.luyan.smartmenu_shop.Metadata.CASEPROPERTYITEM;
-import com.example.luyan.smartmenu_shop.Metadata.CASESTANDARDITEM;
 import com.example.luyan.smartmenu_shop.R;
 import com.example.luyan.smartmenu_shop.Utils.ActivityCollectorUtils;
 import com.example.luyan.smartmenu_shop.Widgt.ChooseStandardPanel;
@@ -33,6 +34,9 @@ public class MenuActivity extends BaseActivity implements CaseAdapter.TapDelegat
     private CateAdapter cateAdapter;
     private CaseAdapter caseAdapter;
     private CASECATEITEM[] casecateitems;
+    private ListView orderList;
+    private RelativeLayout listContent;
+    private TextView orderTag;
     private int currentIndex = 0;//当前index
     ArrayList<CASEITEM> caseitems = new ArrayList<>();
     ArrayList<CASEITEM> orderedItems = new ArrayList<>();//已选菜色
@@ -42,10 +46,36 @@ public class MenuActivity extends BaseActivity implements CaseAdapter.TapDelegat
         super.onCreate(savedInstanceState);
         setContentLayout(R.layout.activity_menu);
 
+        listContent = (RelativeLayout) findViewById(R.id.list_content);
+        orderTag = (TextView) findViewById(R.id.order_tag);
+        findViewById(R.id.ordered).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showPopwindow();
+            }
+        });
+
         initData();
         initCateList();
         initCaseList();
         ActivityCollectorUtils.addActivity(this);
+    }
+
+    /**
+     * 显示popupWindow
+     */
+    private void showPopwindow() {
+
+        View contentView = LayoutInflater.from(MenuActivity.this).inflate(
+                R.layout.pop_list_content, null);
+        orderList = (ListView) contentView.findViewById(R.id.order_list);
+        OrderedAdapter orderedAdapter = new OrderedAdapter(this, orderedItems);
+        orderList.setAdapter(orderedAdapter);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        contentView.setBackground(new ColorDrawable(0xb0000000));
+        contentView.setLayoutParams(params);
+        listContent.addView(contentView);
+
     }
 
     private void initCateList() {
@@ -62,7 +92,7 @@ public class MenuActivity extends BaseActivity implements CaseAdapter.TapDelegat
                     casecateitems[currentIndex].setSelected(false);
                     currentIndex = i;
                     cateAdapter.notifyDataSetChanged();
-                    caseitems = casecateitems[currentIndex].getCases();
+                    caseAdapter.setCaseitems(casecateitems[currentIndex].getCases());
                     caseAdapter.notifyDataSetChanged();
                 }
             }
@@ -132,10 +162,14 @@ public class MenuActivity extends BaseActivity implements CaseAdapter.TapDelegat
             orderNumView.setVisibility(View.VISIBLE);
             reduceView.setVisibility(View.VISIBLE);
             orderNumView.setText(String.valueOf(orderNum));
+            orderedItems.add(casecateitems[currentIndex].getCases().get(index));
         } else {
             orderNum++;
             orderNumView.setText(String.valueOf(orderNum));
         }
+        Public.totalOrderNum ++;
+        casecateitems[currentIndex].getCases().get(index).setOrderNum(orderNum);
+        setTagNum(Public.totalOrderNum);
     }
 
     @Override
@@ -146,7 +180,11 @@ public class MenuActivity extends BaseActivity implements CaseAdapter.TapDelegat
         if (orderNum == 0) {
             orderNumView.setVisibility(View.GONE);
             reduceView.setVisibility(View.GONE);
+            orderedItems.remove(casecateitems[currentIndex].getCases().get(index));
         }
+        Public.totalOrderNum --;
+        casecateitems[currentIndex].getCases().get(index).setOrderNum(orderNum);
+        setTagNum(Public.totalOrderNum);
     }
 
     @Override
@@ -161,6 +199,15 @@ public class MenuActivity extends BaseActivity implements CaseAdapter.TapDelegat
     @Override
     /*ChooseStandardPanel点击事件的代理方法*/
     public void tap(int index, int orderNum) {
+        setTagNum(Public.totalOrderNum);
+    }
 
+    private void setTagNum(int num){
+        if (num == 0){
+            orderTag.setVisibility(View.GONE);
+        } else {
+            orderTag.setVisibility(View.VISIBLE);
+            orderTag.setText(String.valueOf(num));
+        }
     }
 }

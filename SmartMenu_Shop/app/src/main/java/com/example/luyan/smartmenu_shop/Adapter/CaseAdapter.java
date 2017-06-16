@@ -61,15 +61,24 @@ public class CaseAdapter extends BaseAdapter {
         }
 
         holder.caseName.setText(caseitems.get(position).getCaseName());
-        holder.casePrice.setText(String.valueOf(caseitems.get(position).getCasePrice()));
+        holder.casePrice.setText("￥"+String.valueOf(caseitems.get(position).getCasePrice()));
         holder.reduce.setVisibility(View.GONE);
         holder.orderNum.setVisibility(View.GONE);
         if (caseitems.get(position).getCasePropertyVals().size() == 0 && caseitems.get(position).getCaseStandardVals().size() == 0){
             holder.chooseStandard.setVisibility(View.GONE);
             holder.orderNumOperate.setVisibility(View.VISIBLE);
+            if (caseitems.get(position).getOrderNum() != 0){
+                holder.orderNum.setText(String.valueOf(caseitems.get(position).getOrderNum()));
+                holder.orderNum.setVisibility(View.VISIBLE);
+                holder.reduce.setVisibility(View.VISIBLE);
+            }
         } else {
             holder.chooseStandard.setVisibility(View.VISIBLE);
             holder.orderNumOperate.setVisibility(View.GONE);
+            if (caseitems.get(position).getOrderNum() != 0){
+                holder.standardOrderNum.setVisibility(View.VISIBLE);
+                holder.standardOrderNum.setText(String.valueOf(caseitems.get(position).getOrderNum()));
+            }
         }
 
         holder.chooseStandard.setOnClickListener(new View.OnClickListener() {
@@ -120,6 +129,14 @@ public class CaseAdapter extends BaseAdapter {
         public RelativeLayout orderNumOperate;//操作
         public RelativeLayout chooseStandard;//选择商品规格
         public TextView standardOrderNum;//已点数量
+    }
+
+    public ArrayList<CASEITEM> getCaseitems() {
+        return caseitems;
+    }
+
+    public void setCaseitems(ArrayList<CASEITEM> caseitems) {
+        this.caseitems = caseitems;
     }
 
     public TapDelegate getTapDelegate() {

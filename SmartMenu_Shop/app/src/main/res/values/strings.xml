@@ -19,6 +19,7 @@
     <string name="notice">通知</string>
     <string name="dealed_order">已处理的订单</string>
     <string name="undealed_order">未处理的订单</string>
+    <string name="confirm">确认</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
