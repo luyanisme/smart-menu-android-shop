@@ -5,15 +5,55 @@
     android:layout_height="match_parent"
     android:id="@+id/pop_content">
 
-    <com.example.luyan.smartmenu_shop.Widgt.MaxHeightView
-        android:layout_alignParentBottom="true"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:mhv_HeightDimen="300dp">
-        <ListView
-            android:id="@+id/order_list"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical">
+        <RelativeLayout
+            android:id="@+id/clear_contain"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:background="@color/colorWhite">
+            <LinearLayout
+                android:id="@+id/clear"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:orientation="horizontal"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:layout_centerVertical="true">
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:src="@drawable/delete_icon"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimary"
+                    android:text="@string/clear"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="5dp"/>
+            </LinearLayout>
+        </RelativeLayout>
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="0dp"
+            android:background="@color/gray" />
+        <com.example.luyan.smartmenu_shop.Widgt.MaxHeightView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorWhite"/>
-    </com.example.luyan.smartmenu_shop.Widgt.MaxHeightView>
+            app:mhv_HeightDimen="300dp">
+            <ListView
+                android:id="@+id/order_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorWhite"/>
+        </com.example.luyan.smartmenu_shop.Widgt.MaxHeightView>
+    </LinearLayout>
+
 </RelativeLayout>

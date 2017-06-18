@@ -71,6 +71,8 @@ public class CaseAdapter extends BaseAdapter {
                 holder.orderNum.setText(String.valueOf(caseitems.get(position).getOrderNum()));
                 holder.orderNum.setVisibility(View.VISIBLE);
                 holder.reduce.setVisibility(View.VISIBLE);
+            } else {
+                holder.orderNum.setText(String.valueOf("0"));
             }
         } else {
             holder.chooseStandard.setVisibility(View.VISIBLE);
@@ -78,6 +80,9 @@ public class CaseAdapter extends BaseAdapter {
             if (caseitems.get(position).getOrderNum() != 0){
                 holder.standardOrderNum.setVisibility(View.VISIBLE);
                 holder.standardOrderNum.setText(String.valueOf(caseitems.get(position).getOrderNum()));
+            } else {
+                holder.standardOrderNum.setVisibility(View.GONE);
+                holder.standardOrderNum.setText(String.valueOf(0));
             }
         }
 

@@ -22,6 +22,7 @@ public class CASEITEM implements Parcelable {
     private Long caseScaledNums;//已售
     private String updateTime;//更新时间
 
+    private Integer cateIndex;//种类序号
     private int orderNum;//已订数量
     private CASESTANDARDITEM casestandarditem;//已选规格
     private CASEPROPERTYITEM casepropertyitem;//已选属性值
@@ -175,6 +176,14 @@ public class CASEITEM implements Parcelable {
         this.updateTime = updateTime;
     }
 
+    public Integer getCateIndex() {
+        return cateIndex;
+    }
+
+    public void setCateIndex(Integer cateIndex) {
+        this.cateIndex = cateIndex;
+    }
+
     public int getOrderNum() {
         return orderNum;
     }
@@ -199,19 +208,19 @@ public class CASEITEM implements Parcelable {
         this.casepropertyitem = casepropertyitem;
     }
 
-    public ArrayList<CASEITEM> getOrderCases() {
-        return orderCases;
-    }
-
-    public void setOrderCases(ArrayList<CASEITEM> orderCases) {
-        this.orderCases = orderCases;
-    }
-
     public String getStandardDesc() {
         return standardDesc;
     }
 
     public void setStandardDesc(String standardDesc) {
         this.standardDesc = standardDesc;
+    }
+
+    public ArrayList<CASEITEM> getOrderCases() {
+        return orderCases;
+    }
+
+    public void setOrderCases(ArrayList<CASEITEM> orderCases) {
+        this.orderCases = orderCases;
     }
 }

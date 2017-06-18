@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.luyan.smartmenu_shop.Common.Public;
 import com.example.luyan.smartmenu_shop.Metadata.CASEITEM;
 import com.example.luyan.smartmenu_shop.Metadata.ORDERITEM;
 import com.example.luyan.smartmenu_shop.R;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 public class OrderedAdapter extends BaseAdapter {
     private ArrayList<CASEITEM> items;
     private LayoutInflater mInflater;
+    private TapDelegate tapDelegate;
 
     @Override
     public int getCount() {
@@ -39,7 +41,7 @@ public class OrderedAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup viewGroup) {
+    public View getView(final int position, View convertView, ViewGroup viewGroup) {
         OrderedAdapter.ViewHolder holder;
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.ordered_list_item, null);
@@ -57,18 +59,49 @@ public class OrderedAdapter extends BaseAdapter {
         }
 
         holder.caseName.setText(items.get(position).getCaseName());
-        holder.casePrice.setText("¥"+items.get(position).getOrderNum()*items.get(position).getCasePrice());
+        holder.casePrice.setText("¥" + items.get(position).getOrderNum() * items.get(position).getCasePrice());
         holder.orderedNum.setText(String.valueOf(items.get(position).getOrderNum()));
-        if (items.get(position).getStandardDesc() != null){
+        if (items.get(position).getStandardDesc() != null) {
             holder.standardDesc.setVisibility(View.VISIBLE);
             holder.standardDesc.setText(items.get(position).getStandardDesc());
         } else {
             holder.standardDesc.setVisibility(View.GONE);
         }
+
+        holder.add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int orderNum = items.get(position).getOrderNum();
+                orderNum ++;
+                Public.totalOrderNum ++;
+                items.get(position).setOrderNum(orderNum);
+                if (tapDelegate != null) {
+                    tapDelegate.tapAdd(items.get(position));
+                }
+                notifyDataSetChanged();
+            }
+        });
+
+        holder.reduce.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int orderNum = items.get(position).getOrderNum();
+                orderNum --;
+                Public.totalOrderNum --;
+                items.get(position).setOrderNum(orderNum);
+                if (tapDelegate != null) {
+                    tapDelegate.tapReduce(items.get(position));
+                }
+                if (orderNum == 0){
+                    items.remove(position);
+                }
+                notifyDataSetChanged();
+            }
+        });
         return convertView;
     }
 
-    public OrderedAdapter(Context mContext, ArrayList<CASEITEM> items){
+    public OrderedAdapter(Context mContext, ArrayList<CASEITEM> items) {
         this.mInflater = LayoutInflater.from(mContext);
         this.items = items;
     }
@@ -84,4 +117,18 @@ public class OrderedAdapter extends BaseAdapter {
         public RelativeLayout add;//增加
         public RelativeLayout reduce;//减少
     }
+
+    public TapDelegate getTapDelegate() {
+        return tapDelegate;
+    }
+
+    public void setTapDelegate(TapDelegate tapDelegate) {
+        this.tapDelegate = tapDelegate;
+    }
+
+    public interface TapDelegate {
+        public void tapReduce(CASEITEM caseitem);
+        public void tapAdd(CASEITEM caseitem);
+    }
+
 }

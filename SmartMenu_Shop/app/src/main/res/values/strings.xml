@@ -20,6 +20,9 @@
     <string name="dealed_order">已处理的订单</string>
     <string name="undealed_order">未处理的订单</string>
     <string name="confirm">确认</string>
+    <string name="delete">删除</string>
+    <string name="clear">清空</string>
+
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

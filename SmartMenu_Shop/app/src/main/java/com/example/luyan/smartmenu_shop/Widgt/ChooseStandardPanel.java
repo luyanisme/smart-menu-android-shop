@@ -324,6 +324,7 @@ public class ChooseStandardPanel implements View.OnClickListener {
     //浅拷贝
     private CASEITEM weakCopy(CASEITEM caseItem) {
         CASEITEM caseitem = new CASEITEM();
+        caseitem.setCateIndex(caseItem.getCateIndex());
         caseitem.setCaseId(caseItem.getCaseId());
         caseitem.setCasePrice(caseItem.getCasePrice());
         caseitem.setCaseName(caseItem.getCaseName());
