@@ -1,5 +1,6 @@
 package com.example.luyan.smartmenu_shop.Activity.Desk;
 
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -24,6 +25,7 @@ import com.example.luyan.smartmenu_shop.Utils.ActivityCollectorUtils;
 import com.example.luyan.smartmenu_shop.Utils.ArrayUtils;
 import com.example.luyan.smartmenu_shop.Widgt.ChooseStandardPanel;
 import com.example.luyan.smartmenu_shop.Widgt.POPOrderView;
+import com.example.luyan.smartmenu_shop.Widgt.SMDialog;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -31,6 +33,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 public class MenuActivity extends BaseActivity implements CaseAdapter.TapDelegate, ChooseStandardPanel.TapDelegate, POPOrderView.TapDelegate, OrderedAdapter.TapDelegate {
+
+    public static int REQUESTCODE = 0;
 
     private ListView cateList;//分类列表
     private ListView caseList;//商品列表
@@ -74,10 +78,26 @@ public class MenuActivity extends BaseActivity implements CaseAdapter.TapDelegat
             }
         });
 
+        findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.putParcelableArrayListExtra("orderItems", orderedItems);
+                setResult(REQUESTCODE, intent);
+                ActivityCollectorUtils.pop();
+            }
+        });
+
         initData();
         initCateList();
         initCaseList();
         ActivityCollectorUtils.addActivity(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        resotre();
     }
 
     private void initCateList() {
@@ -168,8 +188,39 @@ public class MenuActivity extends BaseActivity implements CaseAdapter.TapDelegat
 
     @Override
     public void tapLeftNaviBar(View view) {
-        Public.totalOrderNum = 0;
-        ActivityCollectorUtils.pop();
+        if (Public.totalOrderNum != 0){
+            final SMDialog sm = new SMDialog(MenuActivity.this);
+            sm.setTitle(getResources().getString(R.string.tips));
+            sm.setMessage("返回将清空订单列表");
+
+            sm.setPositiveButton(getResources().getString(R.string.go_on), new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    // TODO Auto-generated method stub
+                    Intent intent = new Intent();
+                    intent.putParcelableArrayListExtra("orderItems", null);
+                    setResult(REQUESTCODE, intent);
+                    ActivityCollectorUtils.pop();
+                    sm.dismiss();
+                }
+            });
+
+            sm.setNegativeButton(getResources().getString(R.string.cancel), new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    // TODO Auto-generated method stub
+                    sm.dismiss();
+                }
+            });
+        } else {
+            Intent intent = new Intent();
+            intent.putParcelableArrayListExtra("orderItems", null);
+            setResult(REQUESTCODE, intent);
+            ActivityCollectorUtils.pop();
+        }
+
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.example.luyan.smartmenu_shop.Activity.Desk;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
@@ -28,7 +29,6 @@ public class DeskDetailActivity extends BaseActivity {
     SwipeMenuListView caseOrdredList;//已点菜列表
     ArrayList<CASEITEM> caseitems = new ArrayList<>();
     CaseOrderedAdapter caseOrderedAdapter;
-    TextView orderStatueBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,7 +106,7 @@ public class DeskDetailActivity extends BaseActivity {
     @Override
     public void onClick(View v) {
         super.onClick(v);
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.order_state_btn:
                 ((TextView) v).setText(getResources().getString(R.string.ordered));
                 v.setBackgroundColor(getResources().getColor(R.color.gray));
@@ -136,6 +136,21 @@ public class DeskDetailActivity extends BaseActivity {
 
     @Override
     public void tapRightNaviBar(View view) {
-        IntentUtils.startToActivity(DeskDetailActivity.this, MenuActivity.class);
+        Intent intent = new Intent();
+        intent.setClass(DeskDetailActivity.this, MenuActivity.class);
+        startActivityForResult(intent, MenuActivity.REQUESTCODE);//REQUESTCODE定义一个整型做为请求对象标识
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == MenuActivity.REQUESTCODE) {
+            if (data.getParcelableArrayListExtra("orderItems") != null){
+                ArrayList<CASEITEM> caseItems = data.getParcelableArrayListExtra("orderItems");
+                caseitems.addAll(caseItems);
+                caseOrderedAdapter.setCaseItems(caseitems);
+                caseOrderedAdapter.notifyDataSetChanged();
+            }
+        }
     }
 }

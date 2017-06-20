@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.luyan.smartmenu_shop.Metadata.CASEITEM;
@@ -38,7 +39,7 @@ public class CaseOrderedAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup viewGroup) {
+    public View getView(final int position, View convertView, ViewGroup viewGroup) {
         CaseOrderedAdapter.ViewHolder holder;
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.case_ordered_list_item, null);
@@ -48,15 +49,44 @@ public class CaseOrderedAdapter extends BaseAdapter {
             holder.casePrice = (TextView) convertView.findViewById(R.id.case_price);
             holder.caseNum = (TextView) convertView.findViewById(R.id.case_num);
             holder.standardProperty = (TextView) convertView.findViewById(R.id.standard_property);
+            holder.add = (RelativeLayout) convertView.findViewById(R.id.add_icon);
+            holder.reduce = (RelativeLayout) convertView.findViewById(R.id.reduce_icon);
             convertView.setTag(holder);//绑定ViewHolder对象
         } else {
             holder = (CaseOrderedAdapter.ViewHolder) convertView.getTag();//取出ViewHolder对象
         }
 
         holder.caseName.setText(caseItems.get(position).getCaseName());
-        holder.casePrice.setText(String.valueOf(caseItems.get(position).getCasePrice())+"¥");
-        holder.caseNum.setText("×"+caseItems.get(position).getOrderNum());
-        holder.standardProperty.setText("("+caseItems.get(position).getCasestandarditem().getCaseStandardValue()+"+"+caseItems.get(position).getCasepropertyitem().getCasePropertyValue()+")");
+        holder.casePrice.setText(String.valueOf(caseItems.get(position).getCasePrice()*caseItems.get(position).getOrderNum())+"¥");
+        holder.caseNum.setText(""+caseItems.get(position).getOrderNum());
+        if (caseItems.get(position).getStandardDesc() != null) {
+            holder.standardProperty.setVisibility(View.VISIBLE);
+            holder.standardProperty.setText(caseItems.get(position).getStandardDesc());
+        } else {
+            holder.standardProperty.setVisibility(View.GONE);
+        }
+        holder.add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int orderNum = caseItems.get(position).getOrderNum();
+                orderNum ++;
+                caseItems.get(position).setOrderNum(orderNum);
+                notifyDataSetChanged();
+            }
+        });
+        holder.reduce.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int orderNum = caseItems.get(position).getOrderNum();
+                orderNum --;
+                if (orderNum == 0){
+                    caseItems.remove(position);
+                } else {
+                    caseItems.get(position).setOrderNum(orderNum);
+                }
+                notifyDataSetChanged();
+            }
+        });
         return convertView;
     }
 
@@ -73,5 +103,15 @@ public class CaseOrderedAdapter extends BaseAdapter {
         public TextView casePrice;
         public TextView caseNum;
         public TextView standardProperty;
+        public RelativeLayout add;//增加
+        public RelativeLayout reduce;//减少
+    }
+
+    public ArrayList<CASEITEM> getCaseItems() {
+        return caseItems;
+    }
+
+    public void setCaseItems(ArrayList<CASEITEM> caseItems) {
+        this.caseItems = caseItems;
     }
 }

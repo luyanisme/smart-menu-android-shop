@@ -82,7 +82,7 @@
             android:layout_marginRight="10dp"
             android:background="@drawable/choose_standard_bg"
             android:gravity="center"
-            android:text="@string/add_to_chart"
+            android:text="@string/add_to_order"
             android:textColor="@color/colorWhite"
             android:textSize="13dp" />
 
