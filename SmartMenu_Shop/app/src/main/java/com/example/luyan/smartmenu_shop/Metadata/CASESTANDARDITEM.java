@@ -8,10 +8,10 @@ import android.os.Parcelable;
  */
 
 public class CASESTANDARDITEM implements Parcelable{
-    private long caseStandardId;//规格id
-    private String caseStandardName;//规格名称
-    private long caseStandardValId;//规格值id
-    private String caseStandardValue;//规格值名称
+    private long ruleId;//规格id
+    private String ruleName;//规格名称
+    private long id;//规格值id
+    private String value;//规格值名称
     private float casePrice;//规格价格
     private boolean isSelected;//是否选中
 
@@ -19,11 +19,12 @@ public class CASESTANDARDITEM implements Parcelable{
 
     }
 
+
     protected CASESTANDARDITEM(Parcel in) {
-        caseStandardId = in.readLong();
-        caseStandardName = in.readString();
-        caseStandardValId = in.readLong();
-        caseStandardValue = in.readString();
+        ruleId = in.readLong();
+        ruleName = in.readString();
+        id = in.readLong();
+        value = in.readString();
         casePrice = in.readFloat();
         isSelected = in.readByte() != 0;
     }
@@ -47,44 +48,44 @@ public class CASESTANDARDITEM implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeLong(caseStandardId);
-        parcel.writeString(caseStandardName);
-        parcel.writeLong(caseStandardValId);
-        parcel.writeString(caseStandardValue);
+        parcel.writeLong(ruleId);
+        parcel.writeString(ruleName);
+        parcel.writeLong(id);
+        parcel.writeString(value);
         parcel.writeFloat(casePrice);
         parcel.writeByte((byte) (isSelected ? 1 : 0));
     }
 
-    public long getCaseStandardId() {
-        return caseStandardId;
+    public long getRuleId() {
+        return ruleId;
     }
 
-    public void setCaseStandardId(long caseStandardId) {
-        this.caseStandardId = caseStandardId;
+    public void setRuleId(long ruleId) {
+        this.ruleId = ruleId;
     }
 
-    public String getCaseStandardName() {
-        return caseStandardName;
+    public String getRuleName() {
+        return ruleName;
     }
 
-    public void setCaseStandardName(String caseStandardName) {
-        this.caseStandardName = caseStandardName;
+    public void setRuleName(String ruleName) {
+        this.ruleName = ruleName;
     }
 
-    public long getCaseStandardValId() {
-        return caseStandardValId;
+    public long getId() {
+        return id;
     }
 
-    public void setCaseStandardValId(long caseStandardValId) {
-        this.caseStandardValId = caseStandardValId;
+    public void setId(long id) {
+        this.id = id;
     }
 
-    public String getCaseStandardValue() {
-        return caseStandardValue;
+    public String getValue() {
+        return value;
     }
 
-    public void setCaseStandardValue(String caseStandardValue) {
-        this.caseStandardValue = caseStandardValue;
+    public void setValue(String value) {
+        this.value = value;
     }
 
     public float getCasePrice() {

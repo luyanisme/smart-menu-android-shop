@@ -3,11 +3,17 @@ package com.example.luyan.smartmenu_shop.Metadata;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Generated;
+
 /**
  * Created by luyan on 06/06/2017.
  */
 
+@Entity
 public class DESKITEM implements Parcelable{
+    @Id
     private int id;
     private String deskName;//桌位名称
     private int capacity;//桌位人数
@@ -40,6 +46,16 @@ public class DESKITEM implements Parcelable{
 
     public DESKITEM() {
 
+    }
+
+    @Generated(hash = 1909793377)
+    public DESKITEM(int id, String deskName, int capacity, int statue,
+            boolean isHall) {
+        this.id = id;
+        this.deskName = deskName;
+        this.capacity = capacity;
+        this.statue = statue;
+        this.isHall = isHall;
     }
 
     @Override
@@ -94,5 +110,13 @@ public class DESKITEM implements Parcelable{
 
     public void setHall(boolean hall) {
         isHall = hall;
+    }
+
+    public boolean getIsHall() {
+        return this.isHall;
+    }
+
+    public void setIsHall(boolean isHall) {
+        this.isHall = isHall;
     }
 }

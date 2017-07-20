@@ -2,19 +2,29 @@ package com.example.luyan.smartmenu_shop.Fragment.Main;
 
 
 import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.andview.refreshview.XRefreshView;
 import com.example.luyan.smartmenu_shop.Adapter.NoticeAdapter;
 import com.example.luyan.smartmenu_shop.Metadata.NOTICEITEM;
+import com.example.luyan.smartmenu_shop.Metadata.RESPONSE;
+import com.example.luyan.smartmenu_shop.Model.NoticeModel;
 import com.example.luyan.smartmenu_shop.R;
+import com.example.luyan.smartmenu_shop.Service.WebSocketService;
+import com.example.luyan.smartmenu_shop.Utils.ZHHttpUtils.ZHHttpCallBack;
+import com.example.luyan.smartmenu_shop.Widgt.SMDialog;
+import com.example.luyan.smartmenu_shop.Widgt.ToastWidgt;
+import com.google.gson.Gson;
+import com.kaopiz.kprogresshud.KProgressHUD;
 
 import java.util.ArrayList;
 
@@ -29,22 +39,9 @@ public class NoticeFragment extends Fragment {
     private XRefreshView refreshView;
     private ListView listView;
     private NoticeAdapter noticeAdapter;
-
-    private Handler mHandler = new Handler()
-    {
-        public void handleMessage(android.os.Message msg)
-        {
-            switch (msg.what)
-            {
-                case REFRESH_COMPLETE:
-                    noticeitems.addAll(noticeitems);
-                    noticeAdapter.notifyDataSetChanged();
-                    refreshView.stopRefresh();
-                    break;
-
-            }
-        };
-    };
+    private KProgressHUD hud;
+    private NoticeDelegate delegate;
+    private int unreadNums = 0;//未读消息个数
 
     public NoticeFragment() {
         // Required empty public constructor
@@ -54,8 +51,37 @@ public class NoticeFragment extends Fragment {
         // Required empty public constructor
         this.context = contexts;
         this.noticeitems = noticeitems;
-    }
 
+        WebSocketService.handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                if (msg.what == 0) {
+                    NOTICEITEM noticeitem = new Gson().fromJson(msg.getData().get("notice").toString(), NOTICEITEM.class);
+                    if (noticeitem.getDeskId() != null) {
+                        //收到notice
+                        addNoticeItem(noticeitem);
+                        unreadNums ++;
+                    } else {
+                        //返回result结果
+                        hud.dismiss();
+                        ToastWidgt.showWithInfo(getActivity(), noticeitem.getMsg(), Toast.LENGTH_SHORT);
+                        unreadNums --;
+                    }
+                    if (delegate != null) {
+                        delegate.msgNumChange(unreadNums);
+                    }
+                }
+            }
+        };
+
+        hud = KProgressHUD.create(contexts)
+                .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setLabel(contexts.getResources().getString(R.string.waiting))
+                .setCancellable(true)
+                .setAnimationSpeed(2)
+                .setDimAmount(0.5f);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -68,7 +94,24 @@ public class NoticeFragment extends Fragment {
         refreshView.setXRefreshViewListener(new XRefreshView.XRefreshViewListener() {
             @Override
             public void onRefresh() {
-                mHandler.sendEmptyMessageDelayed(REFRESH_COMPLETE, 2000);
+                NoticeModel.getInstance().firstPage(new ZHHttpCallBack<RESPONSE<NOTICEITEM>>() {
+                    @Override
+                    public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
+                        if (response.getStatus() == 0) {
+                            noticeitems.clear();
+                            noticeitems.addAll(response.getData());
+                            noticeAdapter.notifyDataSetChanged();
+                            refreshView.stopRefresh();
+                            statistics();
+                            hud.dismiss();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, String rawJsonResponse, RESPONSE response) {
+
+                    }
+                });
             }
 
             @Override
@@ -78,13 +121,22 @@ public class NoticeFragment extends Fragment {
 
             @Override
             public void onLoadMore(boolean isSilence) {
-                new Handler().postDelayed(new Runnable() {
+                NoticeModel.getInstance().goNextPage(new ZHHttpCallBack<RESPONSE<NOTICEITEM>>() {
+                    @Override
+                    public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
+                        if (response.getStatus() == 0) {
+                            noticeitems.addAll(response.getData());
+                            noticeAdapter.notifyDataSetChanged();
+                            refreshView.stopLoadMore();
+                            hud.dismiss();
+                        }
+                    }
 
                     @Override
-                    public void run() {
-                        refreshView.stopLoadMore();
+                    public void onFailure(int statusCode, String rawJsonResponse, RESPONSE response) {
+
                     }
-                }, 2000);
+                });
             }
 
             @Override
@@ -97,18 +149,98 @@ public class NoticeFragment extends Fragment {
 
             }
         });
+        hud.show();
+        NoticeModel.getInstance().firstPage(new ZHHttpCallBack<RESPONSE<NOTICEITEM>>() {
+            @Override
+            public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
+                if (response.getStatus() == 0) {
+                    noticeitems.addAll(response.getData());
+                    noticeAdapter.notifyDataSetChanged();
+                    hud.dismiss();
+                    statistics();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, String rawJsonResponse, RESPONSE response) {
+
+            }
+        });
         initList();
 
         return view;
     }
 
-    private void initList(){
-        noticeAdapter = new NoticeAdapter(getActivity(),noticeitems);
+    private void initList() {
+        noticeAdapter = new NoticeAdapter(getActivity(), noticeitems);
         listView.setAdapter(noticeAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, final int i, long l) {
+
+                if (noticeitems.get(i).isNoticeIsDealed()){
+                    ToastWidgt.showWithInfo(getActivity(),getActivity().getResources().getString(R.string.has_dealed),Toast.LENGTH_SHORT);
+                    return;
+                }
+
+                final SMDialog sm = new SMDialog(getActivity());
+                sm.setTitle(getResources().getString(R.string.tips));
+                sm.setMessage(noticeitems.get(i).getDeskNum() + "请求服务");
+
+                sm.setPositiveButton(getResources().getString(R.string.recieved), new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // TODO Auto-generated method stub
+                        noticeitems.get(i).setClientType(1);//设置客户端为安卓
+                        noticeitems.get(i).setNoticeIsDealed(true);
+                        noticeitems.get(i).setNoticeContent(getActivity().getResources().getString(R.string.deal_complete));
+                        noticeAdapter.notifyDataSetChanged();
+                        sm.dismiss();
+                        WebSocketService.sendMsg(new Gson().toJson(noticeitems.get(i), NOTICEITEM.class));
+                        hud.show();
+                    }
+                });
+
+                sm.setNegativeButton(getResources().getString(R.string.cancel), new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        // TODO Auto-generated method stub
+                        sm.dismiss();
+                    }
+                });
+            }
+        });
     }
 
-    public void addNoticeItem(NOTICEITEM noticeitem){
+    private void addNoticeItem(NOTICEITEM noticeitem) {
         noticeitems.add(0, noticeitem);
         noticeAdapter.notifyDataSetChanged();
     }
+
+    /*统计未读个数*/
+    private void statistics(){
+        unreadNums = 0;
+        for (int i = 0; i < noticeitems.size(); i++) {
+            if (!noticeitems.get(i).isNoticeIsDealed()){
+                unreadNums ++;
+            }
+        }
+        if (delegate != null) {
+            delegate.msgNumChange(unreadNums);
+        }
+    }
+
+    public NoticeDelegate getDelegate() {
+        return delegate;
+    }
+
+    public void setDelegate(NoticeDelegate delegate) {
+        this.delegate = delegate;
+    }
+
+    public interface NoticeDelegate {
+        public void msgNumChange(int unreadNum);
+    }
+
 }

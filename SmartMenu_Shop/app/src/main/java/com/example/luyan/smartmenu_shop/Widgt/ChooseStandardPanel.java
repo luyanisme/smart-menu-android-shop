@@ -79,8 +79,8 @@ public class ChooseStandardPanel implements View.OnClickListener {
         reduce.setOnClickListener(this);
         orderNumView = (TextView) dialog.findViewById(R.id.case_order_num);
         if (caseItem.getOrderCases().size() != 0){
-            Long propertyId = caseItem.getOrderCases().get(caseItem.getOrderCases().size()-1).getCasepropertyitem().getCasePropertyValId();
-            Long standardId = caseItem.getOrderCases().get(caseItem.getOrderCases().size()-1).getCasestandarditem().getCaseStandardValId();
+            Long propertyId = caseItem.getOrderCases().get(caseItem.getOrderCases().size()-1).getCasepropertyitem().getId();
+            Long standardId = caseItem.getOrderCases().get(caseItem.getOrderCases().size()-1).getCasestandarditem().getId();
             ArrayUtils.findPropertyId(propertyId,caseItem.getCasePropertyVals()).setSelected(true);
             ArrayUtils.findStandardId(standardId,caseItem.getCaseStandardVals()).setSelected(true);
             choosecasestandarditem = ArrayUtils.findStandardId(standardId,caseItem.getCaseStandardVals());
@@ -124,7 +124,7 @@ public class ChooseStandardPanel implements View.OnClickListener {
 
         if (caseItem.getCaseStandardVals().size() != 0) {
             TextView standardName = new TextView(context);
-            standardName.setText(caseItem.getCaseStandardVals().get(0).getCaseStandardName());
+            standardName.setText(caseItem.getCaseStandardVals().get(0).getRuleName());
             standardName.setTextColor(context.getResources().getColor(R.color.colorPrimary));
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             lp.setMargins(DHDensityUtil.dip2px(context, 10), 0, 0, 0);
@@ -137,14 +137,14 @@ public class ChooseStandardPanel implements View.OnClickListener {
                     DHDensityUtil.dip2px(context, 10),
                     DHDensityUtil.dip2px(context, 10),
                     DHDensityUtil.dip2px(context, 10));
-            for (int i = 0; i < caseItem.getCasePropertyVals().size(); i++) {
+            for (int i = 0; i < caseItem.getCaseStandardVals().size(); i++) {
                 int ranHeight = DHDensityUtil.dip2px(context, 25);
                 ViewGroup.MarginLayoutParams mlp = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ranHeight);
                 mlp.setMargins(DHDensityUtil.dip2px(context, 5), 0, DHDensityUtil.dip2px(context, 5), DHDensityUtil.dip2px(context, 5));
                 FLTextView tv = new FLTextView(context);
                 tv.setPadding(DHDensityUtil.dip2px(context, 15), 0, DHDensityUtil.dip2px(context, 15), 0);
                 tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-                tv.setText(caseItem.getCaseStandardVals().get(i).getCaseStandardValue());
+                tv.setText(caseItem.getCaseStandardVals().get(i).getValue());
                 tv.setGravity(Gravity.CENTER_VERTICAL);
                 tv.setLines(1);
                 tv.setType(FLTextView.STANDARD);
@@ -152,7 +152,7 @@ public class ChooseStandardPanel implements View.OnClickListener {
                 tv.setOnClickListener(this);
                 if (caseItem.getCaseStandardVals().get(i).isSelected()) {
                     tv.setSelected(true);
-                    standardStr = caseItem.getCaseStandardVals().get(i).getCaseStandardValue();
+                    standardStr = caseItem.getCaseStandardVals().get(i).getValue();
                     casePrice.setText("¥" + caseItem.getCaseStandardVals().get(i).getCasePrice());
                 } else {
                     tv.setSelected(false);
@@ -165,7 +165,7 @@ public class ChooseStandardPanel implements View.OnClickListener {
 
         if (caseItem.getCasePropertyVals().size() != 0) {
             TextView propertyName = new TextView(context);
-            propertyName.setText(caseItem.getCasePropertyVals().get(0).getCasePropertyName());
+            propertyName.setText(caseItem.getCasePropertyVals().get(0).getRuleName());
             propertyName.setTextColor(context.getResources().getColor(R.color.colorPrimary));
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             lp.setMargins(DHDensityUtil.dip2px(context, 10), 0, 0, 0);
@@ -185,7 +185,7 @@ public class ChooseStandardPanel implements View.OnClickListener {
                 FLTextView tv = new FLTextView(context);
                 tv.setPadding(DHDensityUtil.dip2px(context, 15), 0, DHDensityUtil.dip2px(context, 15), 0);
                 tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-                tv.setText(caseItem.getCasePropertyVals().get(i).getCasePropertyValue());
+                tv.setText(caseItem.getCasePropertyVals().get(i).getValue());
                 tv.setGravity(Gravity.CENTER_VERTICAL);
                 tv.setType(FLTextView.PROPERTY);
                 tv.setId(i);
@@ -193,7 +193,7 @@ public class ChooseStandardPanel implements View.OnClickListener {
                 tv.setOnClickListener(this);
                 if (caseItem.getCasePropertyVals().get(i).isSelected()) {
                     tv.setSelected(true);
-                    propertyStr = caseItem.getCasePropertyVals().get(i).getCasePropertyValue();
+                    propertyStr = caseItem.getCasePropertyVals().get(i).getValue();
                 } else {
                     tv.setSelected(false);
                 }
@@ -283,7 +283,7 @@ public class ChooseStandardPanel implements View.OnClickListener {
                             standardTextViews.get(i).setSelected(true);
                             caseItem.getCaseStandardVals().get(i).setSelected(true);
                             choosecasestandarditem = caseItem.getCaseStandardVals().get(i);
-                            standardStr = caseItem.getCaseStandardVals().get(i).getCaseStandardValue();
+                            standardStr = caseItem.getCaseStandardVals().get(i).getValue();
                             casePrice.setText("¥" + caseItem.getCaseStandardVals().get(i).getCasePrice());
                         } else {
                             standardTextViews.get(i).setSelected(false);
@@ -298,7 +298,7 @@ public class ChooseStandardPanel implements View.OnClickListener {
                             propertyTextViews.get(i).setSelected(true);
                             caseItem.getCasePropertyVals().get(i).setSelected(true);
                             choosecasepropertyitem = caseItem.getCasePropertyVals().get(i);
-                            propertyStr = caseItem.getCasePropertyVals().get(i).getCasePropertyValue();
+                            propertyStr = caseItem.getCasePropertyVals().get(i).getValue();
                         } else {
                             propertyTextViews.get(i).setSelected(false);
                             caseItem.getCasePropertyVals().get(i).setSelected(false);

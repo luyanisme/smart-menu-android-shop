@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'org.greenrobot.greendao'
 
 android {
     compileSdkVersion 24
@@ -17,12 +18,19 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    useLibrary 'org.apache.http.legacy'
 }
 
 allprojects {
     repositories {
         maven { url "https://jitpack.io" }
     }
+}
+
+greendao {
+    schemaVersion 1
+    daoPackage 'com.example.luyan.smartmenu_shop.GreenDao'
+    targetGenDir 'src/main/java'
 }
 
 dependencies {
@@ -37,8 +45,12 @@ dependencies {
     compile 'com.huxq17.xrefreshview:xrefreshview:3.6.9'
     compile 'com.android.support:recyclerview-v7:24.2.1'
     compile 'com.google.code.gson:gson:2.7'
+    compile 'com.loopj.android:android-async-http:1.4.9'
+    compile 'com.kaopiz:kprogresshud:1.0.5'
+    compile 'org.greenrobot:greendao:3.2.0'
     compile 'com.github.dongjunkun:DropDownMenu:1.0.4'
     compile 'cn.lankton:flowlayout:3.1.0'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
     testCompile 'junit:junit:4.12'
     compile files('libs/autobahn-0.5.0.jar')
 }

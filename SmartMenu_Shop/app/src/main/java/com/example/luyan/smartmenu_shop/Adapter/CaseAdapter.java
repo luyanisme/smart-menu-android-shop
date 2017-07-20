@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.example.luyan.smartmenu_shop.Common.ServerConfig;
 import com.example.luyan.smartmenu_shop.Metadata.CASECATEITEM;
 import com.example.luyan.smartmenu_shop.Metadata.CASEITEM;
 import com.example.luyan.smartmenu_shop.R;
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 public class CaseAdapter extends BaseAdapter {
     private ArrayList<CASEITEM> caseitems;
     private LayoutInflater mInflater;
+    private Context context;
     TapDelegate tapDelegate;
 
     @Override
@@ -60,6 +63,10 @@ public class CaseAdapter extends BaseAdapter {
             holder = (CaseAdapter.ViewHolder) convertView.getTag();//取出ViewHolder对象
         }
 
+        Glide
+                .with(context)
+                .load(ServerConfig.IMAGE_URL+caseitems.get(position).getCaseImagePath())
+                .into(holder.caseImage);
         holder.caseName.setText(caseitems.get(position).getCaseName());
         holder.casePrice.setText("￥"+String.valueOf(caseitems.get(position).getCasePrice()));
         holder.reduce.setVisibility(View.GONE);
@@ -118,6 +125,7 @@ public class CaseAdapter extends BaseAdapter {
 
     public CaseAdapter(Context mContext, ArrayList<CASEITEM> caseitems) {
         this.mInflater = LayoutInflater.from(mContext);
+        this.context = mContext;
         this.caseitems = caseitems;
     }
 

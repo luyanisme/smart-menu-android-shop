@@ -9,18 +9,49 @@ import android.os.Parcelable;
 
 public class NOTICEITEM implements Parcelable {
 
+    private Integer clientType = 1;//客户端类型
+    private String noticeKey;//消息的唯一标识
+    private Long noticeId;//店铺id
+    private Long shopId;//店铺id
+    private Long noticeType;//消息类型
+    private Long deskId;//桌面id
     private String deskNum;//桌号
-    private boolean isDealed;//是否处理过
-    private boolean isReaded;//是否已读
-    private String date;//时间
+    private boolean noticeIsDealed;//是否处理过
+    private String dateTime;//时间
     private String noticeContent;//简述
 
-    public NOTICEITEM(Parcel in) {
+    private Integer statue;//返回状态
+    private String msg;//消息
+    private String data;//内容
+
+    public NOTICEITEM() {
+
+    }
+
+    protected NOTICEITEM(Parcel in) {
+        noticeKey = in.readString();
         deskNum = in.readString();
-        isDealed = in.readByte() != 0;
-        isReaded = in.readByte() != 0;
-        date = in.readString();
+        noticeIsDealed = in.readByte() != 0;
+        dateTime = in.readString();
         noticeContent = in.readString();
+        msg = in.readString();
+        data = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(noticeKey);
+        dest.writeString(deskNum);
+        dest.writeByte((byte) (noticeIsDealed ? 1 : 0));
+        dest.writeString(dateTime);
+        dest.writeString(noticeContent);
+        dest.writeString(msg);
+        dest.writeString(data);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<NOTICEITEM> CREATOR = new Creator<NOTICEITEM>() {
@@ -35,22 +66,52 @@ public class NOTICEITEM implements Parcelable {
         }
     };
 
-    public NOTICEITEM() {
-
+    public Integer getClientType() {
+        return clientType;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public void setClientType(Integer clientType) {
+        this.clientType = clientType;
     }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(deskNum);
-        parcel.writeByte((byte) (isDealed ? 1 : 0));
-        parcel.writeByte((byte) (isReaded ? 1 : 0));
-        parcel.writeString(date);
-        parcel.writeString(noticeContent);
+    public String getNoticeKey() {
+        return noticeKey;
+    }
+
+    public void setNoticeKey(String noticeKey) {
+        this.noticeKey = noticeKey;
+    }
+
+    public Long getNoticeId() {
+        return noticeId;
+    }
+
+    public void setNoticeId(Long noticeId) {
+        this.noticeId = noticeId;
+    }
+
+    public Long getShopId() {
+        return shopId;
+    }
+
+    public void setShopId(Long shopId) {
+        this.shopId = shopId;
+    }
+
+    public Long getNoticeType() {
+        return noticeType;
+    }
+
+    public void setNoticeType(Long noticeType) {
+        this.noticeType = noticeType;
+    }
+
+    public Long getDeskId() {
+        return deskId;
+    }
+
+    public void setDeskId(Long deskId) {
+        this.deskId = deskId;
     }
 
     public String getDeskNum() {
@@ -61,28 +122,20 @@ public class NOTICEITEM implements Parcelable {
         this.deskNum = deskNum;
     }
 
-    public boolean isDealed() {
-        return isDealed;
+    public boolean isNoticeIsDealed() {
+        return noticeIsDealed;
     }
 
-    public void setDealed(boolean dealed) {
-        isDealed = dealed;
+    public void setNoticeIsDealed(boolean noticeIsDealed) {
+        this.noticeIsDealed = noticeIsDealed;
     }
 
-    public boolean isReaded() {
-        return isReaded;
+    public String getDateTime() {
+        return dateTime;
     }
 
-    public void setReaded(boolean readed) {
-        isReaded = readed;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
+    public void setDateTime(String dateTime) {
+        this.dateTime = dateTime;
     }
 
     public String getNoticeContent() {
@@ -91,5 +144,29 @@ public class NOTICEITEM implements Parcelable {
 
     public void setNoticeContent(String noticeContent) {
         this.noticeContent = noticeContent;
+    }
+
+    public Integer getStatue() {
+        return statue;
+    }
+
+    public void setStatue(Integer statue) {
+        this.statue = statue;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
     }
 }

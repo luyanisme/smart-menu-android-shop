@@ -2,6 +2,7 @@ package com.example.luyan.smartmenu_shop.Fragment.Main;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -27,7 +28,7 @@ import de.tavendo.autobahn.WebSocketHandler;
  * Created by luyan on 26/05/2017.
  */
 
-public class MainFragment extends BaseFragment {
+public class MainFragment extends BaseFragment implements NoticeFragment.NoticeDelegate {
 
     private ViewPager viewPager;
     private SlidingTabLayout tabLayout;
@@ -50,51 +51,7 @@ public class MainFragment extends BaseFragment {
     private void initWebSocket() {
         websocketServiceIntent = new Intent(getActivity(), WebSocketService.class);
         getActivity().startService(websocketServiceIntent);
-        WebSocketService.webSocketConnect(new WebSocketHandler() {
-
-            //websocket启动时候的回调
-            @Override
-            public void onOpen() {
-                Log.d("111", "open");
-                WebSocketService.isClosed = false;
-            }
-
-            //websocket接收到消息后的回调
-            @Override
-            public void onTextMessage(String payload) {
-                Log.d("111", "payload = " + payload);
-                Gson gson = new Gson();
-                NOTICEITEM noticeitem = gson.fromJson(payload, NOTICEITEM.class);
-                noticeFragment.addNoticeItem(noticeitem);
-            }
-
-            //websocket关闭时候的回调
-            @Override
-            public void onClose(int code, String reason) {
-                WebSocketService.isClosed = true;
-                Log.d("111", "code = " + code + " reason = " + reason);
-                switch (code) {
-                    case 1:
-                        break;
-                    case 2:
-                        break;
-                    case 3://手动断开连接
-//                            if (!isExitApp) {
-//                                webSocketConnect();
-//                            }
-                        break;
-                    case 4:
-                        break;
-                    /**
-                     * 由于我在这里已经对网络进行了判断,所以相关操作就不在这里做了
-                     */
-                    case 5://网络断开连接
-//                            closeWebsocket(false);
-//                            webSocketConnect();
-                        break;
-                }
-            }
-        });
+        WebSocketService.webSocketConnect();
     }
 
     private void initTabs() {
@@ -103,6 +60,7 @@ public class MainFragment extends BaseFragment {
         tabs.add(getActivity().getResources().getString(R.string.order));
         tabs.add(getActivity().getResources().getString(R.string.order_receive));
         noticeFragment = new NoticeFragment(getActivity(), initNoticeData());
+        noticeFragment.setDelegate(this);
         orderFragment = new OrderFragment(getActivity(), initOrderData());
         orderedFragment = new OrderFragment(getActivity(), initOrderedData());
         fragments.add(noticeFragment);
@@ -117,28 +75,16 @@ public class MainFragment extends BaseFragment {
         //关联ViewPager和TabLayout
         tabLayout.setViewPager(viewPager);
 
-        tabLayout.showMsg(0, 5);
-        tabLayout.setMsgMargin(0, 20, 10);
-        MsgView rtv_2_3 = tabLayout.getMsgView(0);
-        if (rtv_2_3 != null) {
-            rtv_2_3.setBackgroundColor(getResources().getColor(R.color.colorRed));
-        }
+//        tabLayout.showMsg(0, 5);
+//        tabLayout.setMsgMargin(0, 20, 10);
+//        MsgView rtv_2_3 = tabLayout.getMsgView(0);
+//        if (rtv_2_3 != null) {
+//            rtv_2_3.setBackgroundColor(getResources().getColor(R.color.colorRed));
+//        }
     }
 
     private ArrayList<NOTICEITEM> initNoticeData() {
         ArrayList<NOTICEITEM> noticeitems = new ArrayList<>();
-        NOTICEITEM noticeitem = new NOTICEITEM();
-        noticeitem.setDeskNum("5号桌");
-        noticeitem.setNoticeContent("正在呼叫服务员...");
-        noticeitem.setDealed(false);
-
-        NOTICEITEM noticeitem1 = new NOTICEITEM();
-        noticeitem1.setDeskNum("6号桌");
-        noticeitem1.setNoticeContent("正在呼叫服务员...");
-        noticeitem1.setDealed(true);
-        noticeitems.add(noticeitem);
-        noticeitems.add(noticeitem1);
-
         return noticeitems;
     }
 
@@ -176,6 +122,26 @@ public class MainFragment extends BaseFragment {
         orderItems.add(orderItem);
         orderItems.add(orderItem1);
         return orderItems;
+    }
+
+    @Override
+    public void msgNumChange(int unreadNum) {
+//        if (unreadNum == 0){
+//            tabLayout.hideMsg(0);
+//        } else {
+//            tabLayout.showMsg(0, unreadNum);
+//            tabLayout.setMsgMargin(0, 20, 10);
+//            MsgView rtv_2_3 = tabLayout.getMsgView(0);
+//            if (rtv_2_3 != null) {
+//                rtv_2_3.setBackgroundColor(getResources().getColor(R.color.colorRed));
+//            }
+//        }
+        if(unreadNum > 0){
+            tabLayout.showDot(0);
+            tabLayout.setMsgMargin(0, 25, 0);
+        } else {
+            tabLayout.hideMsg(0);
+        }
     }
 
     class TabAdapter extends FragmentPagerAdapter {

@@ -3,10 +3,10 @@ package com.example.luyan.smartmenu_shop.Activity.Desk;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
@@ -14,13 +14,18 @@ import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.example.luyan.smartmenu_shop.Activity.BaseActivity;
 import com.example.luyan.smartmenu_shop.Adapter.CaseOrderedAdapter;
+import com.example.luyan.smartmenu_shop.Utils.ZHHttpUtils.ZHHttpCallBack;
 import com.example.luyan.smartmenu_shop.Metadata.CASEITEM;
 import com.example.luyan.smartmenu_shop.Metadata.CASEPROPERTYITEM;
 import com.example.luyan.smartmenu_shop.Metadata.CASESTANDARDITEM;
+import com.example.luyan.smartmenu_shop.Metadata.ORDEREDITEM;
+import com.example.luyan.smartmenu_shop.Metadata.RESPONSE;
+import com.example.luyan.smartmenu_shop.Model.OrderModel;
 import com.example.luyan.smartmenu_shop.R;
 import com.example.luyan.smartmenu_shop.Utils.ActivityCollectorUtils;
-import com.example.luyan.smartmenu_shop.Utils.IntentUtils;
 import com.example.luyan.smartmenu_shop.Utils.UnitConvertUtils;
+import com.example.luyan.smartmenu_shop.Widgt.ToastWidgt;
+import com.kaopiz.kprogresshud.KProgressHUD;
 
 import java.util.ArrayList;
 
@@ -80,16 +85,16 @@ public class DeskDetailActivity extends BaseActivity {
         caseitem.setCasePrice((float) 256.0);
         caseitem.setOrderNum(2);
         CASESTANDARDITEM casestandarditem = new CASESTANDARDITEM();
-        casestandarditem.setCaseStandardId(1);
-        casestandarditem.setCaseStandardName("数量");
-        casestandarditem.setCaseStandardValId(1);
-        casestandarditem.setCaseStandardValue("一条");
+        casestandarditem.setRuleId(1);
+        casestandarditem.setRuleName("数量");
+        casestandarditem.setId(1);
+        casestandarditem.setValue("一条");
         caseitem.setCasestandarditem(casestandarditem);
         CASEPROPERTYITEM casepropertyitem = new CASEPROPERTYITEM();
-        casepropertyitem.setCasePropertyId(1);
-        casepropertyitem.setCasePropertyName("口味");
-        casepropertyitem.setCasePropertyValId(1);
-        casepropertyitem.setCasePropertyValue("微辣");
+        casepropertyitem.setRuleId(1);
+        casepropertyitem.setRuleName("口味");
+        casepropertyitem.setId(1);
+        casepropertyitem.setValue("微辣");
         caseitem.setCasepropertyitem(casepropertyitem);
 
         CASEITEM caseitem1 = new CASEITEM();
@@ -104,12 +109,42 @@ public class DeskDetailActivity extends BaseActivity {
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         super.onClick(v);
         switch (v.getId()) {
             case R.id.order_state_btn:
-                ((TextView) v).setText(getResources().getString(R.string.ordered));
-                v.setBackgroundColor(getResources().getColor(R.color.gray));
+                final KProgressHUD hud = KProgressHUD.create(DeskDetailActivity.this)
+                        .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                        .setLabel(getResources().getString(R.string.place_an_order))
+                        .setCancellable(true)
+                        .setAnimationSpeed(2)
+                        .setDimAmount(0.5f);
+                hud.show();
+                ORDEREDITEM ordereditem = new ORDEREDITEM();
+                ordereditem.setShopId((long) 1);
+                ordereditem.setDeskId((long) 1);
+                ordereditem.setDeskCateId((long) 1);
+                ordereditem.setOrderedItems(caseitems);
+
+                OrderModel.getInstance().postOrderlist(this, ordereditem, new ZHHttpCallBack<RESPONSE>() {
+
+                    @Override
+                    public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
+                        if (response.getStatus() == 0){
+                            hud.dismiss();
+                            ((TextView) v).setText(getResources().getString(R.string.ordered));
+                            v.setBackgroundColor(getResources().getColor(R.color.gray));
+                            ToastWidgt.showWithInfo(DeskDetailActivity.this,response.getMsg(),Toast.LENGTH_SHORT);
+                            ActivityCollectorUtils.pop();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, String rawJsonResponse, RESPONSE response) {
+
+                    }
+                });
+
                 break;
         }
     }
@@ -145,7 +180,7 @@ public class DeskDetailActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == MenuActivity.REQUESTCODE) {
-            if (data.getParcelableArrayListExtra("orderItems") != null){
+            if (data.getParcelableArrayListExtra("orderItems") != null) {
                 ArrayList<CASEITEM> caseItems = data.getParcelableArrayListExtra("orderItems");
                 caseitems.addAll(caseItems);
                 caseOrderedAdapter.setCaseItems(caseitems);

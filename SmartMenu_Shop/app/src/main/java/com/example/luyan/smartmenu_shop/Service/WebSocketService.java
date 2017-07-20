@@ -7,7 +7,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
@@ -35,6 +38,8 @@ public class WebSocketService extends Service {
     private static WebSocketOptions options = new WebSocketOptions();
     private static boolean isExitApp = false;
     private static String websocketHost = ServerConfig.WEBSOCKET_ADDRESS; //websocket服务端的url,,,ws是协议,和http一样,我写的时候是用的我们公司的服务器所以这里不能贴出来
+
+    public static Handler handler;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -82,10 +87,59 @@ public class WebSocketService extends Service {
         }
     }
 
-    public static void webSocketConnect(WebSocketHandler wsHandler){
-        webSocketConnection = new WebSocketConnection();
+    public static void webSocketConnect() {
+        if (webSocketConnection == null) {
+            webSocketConnection = new WebSocketConnection();
+        }
         try {
-            webSocketConnection.connect(websocketHost, wsHandler, options);
+            webSocketConnection.connect(websocketHost, new WebSocketHandler() {
+
+                //websocket启动时候的回调
+                @Override
+                public void onOpen() {
+                    Log.d("111", "open");
+                    WebSocketService.isClosed = false;
+                }
+
+                //websocket接收到消息后的回调
+                @Override
+                public void onTextMessage(String payload) {
+                    Log.d("111", "payload = " + payload);
+                    Message noticeMessage = new Message();
+                    noticeMessage.what = 0;
+                    Bundle noticeBundle = new Bundle();
+                    noticeBundle.putString("notice", payload);
+                    noticeMessage.setData(noticeBundle);
+                    handler.sendMessage(noticeMessage);
+                }
+
+                //websocket关闭时候的回调
+                @Override
+                public void onClose(int code, String reason) {
+                    WebSocketService.isClosed = true;
+                    Log.d("111", "code = " + code + " reason = " + reason);
+                    switch (code) {
+                        case 1:
+                            break;
+                        case 2:
+                            break;
+                        case 3://手动断开连接
+//                            if (!isExitApp) {
+//                                webSocketConnect();
+//                            }
+                            break;
+                        case 4:
+                            break;
+                        /**
+                         * 由于我在这里已经对网络进行了判断,所以相关操作就不在这里做了
+                         */
+                        case 5://网络断开连接
+//                            closeWebsocket(false);
+//                            webSocketConnect();
+                            break;
+                    }
+                }
+            }, options);
         } catch (WebSocketException e) {
             e.printStackTrace();
         }
@@ -99,6 +153,10 @@ public class WebSocketService extends Service {
             }
     }
 
+    public void receiveMsg() {
+
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -106,4 +164,5 @@ public class WebSocketService extends Service {
             unregisterReceiver(connectionReceiver);
         }
     }
+
 }

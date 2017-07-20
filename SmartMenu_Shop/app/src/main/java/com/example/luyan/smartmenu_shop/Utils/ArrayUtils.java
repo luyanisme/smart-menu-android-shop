@@ -23,7 +23,7 @@ public class ArrayUtils {
 
     public static CASESTANDARDITEM findStandardId(long id, ArrayList<CASESTANDARDITEM> casestandarditems) {
         for (int i = 0; i < casestandarditems.size(); i++) {
-            if (id == casestandarditems.get(i).getCaseStandardValId()) {
+            if (id == casestandarditems.get(i).getId()) {
                 return casestandarditems.get(i);
             }
         }
@@ -32,7 +32,7 @@ public class ArrayUtils {
 
     public static CASEPROPERTYITEM findPropertyId(long id, ArrayList<CASEPROPERTYITEM> casepropertyitems) {
         for (int i = 0; i < casepropertyitems.size(); i++) {
-            if (id == casepropertyitems.get(i).getCasePropertyValId()) {
+            if (id == casepropertyitems.get(i).getId()) {
                 return casepropertyitems.get(i);
             }
         }

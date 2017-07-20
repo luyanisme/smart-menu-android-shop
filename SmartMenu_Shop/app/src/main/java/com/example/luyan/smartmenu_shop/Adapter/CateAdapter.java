@@ -19,13 +19,13 @@ import java.util.ArrayList;
  */
 
 public class CateAdapter extends BaseAdapter {
-    private CASECATEITEM[] casecateitems;
+    private ArrayList<CASECATEITEM> casecateitems;
     private LayoutInflater mInflater;
     private Context mContext;
 
     @Override
     public int getCount() {
-        return casecateitems.length;
+        return casecateitems.size();
     }
 
     @Override
@@ -53,8 +53,8 @@ public class CateAdapter extends BaseAdapter {
             holder = (CateAdapter.ViewHolder) convertView.getTag();//取出ViewHolder对象
         }
 
-        holder.cateName.setText(casecateitems[position].getCaseTypeName());
-        if (casecateitems[position].isSelected()) {
+        holder.cateName.setText(casecateitems.get(position).getCaseTypeName());
+        if (casecateitems.get(position).isSelected()) {
             holder.chooseTag.setVisibility(View.VISIBLE);
             holder.cateName.setTextColor(mContext.getResources().getColor(R.color.colorBlack));
             holder.bg.setBackgroundColor(mContext.getResources().getColor(R.color.colorWhite));
@@ -67,7 +67,7 @@ public class CateAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public CateAdapter(Context mContext, CASECATEITEM[] casecateitems) {
+    public CateAdapter(Context mContext, ArrayList<CASECATEITEM> casecateitems) {
         this.mInflater = LayoutInflater.from(mContext);
         this.mContext = mContext;
         this.casecateitems = casecateitems;

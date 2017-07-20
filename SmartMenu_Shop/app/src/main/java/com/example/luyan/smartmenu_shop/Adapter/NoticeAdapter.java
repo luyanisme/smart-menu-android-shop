@@ -55,7 +55,7 @@ public class NoticeAdapter extends BaseAdapter {
 
         holder.deskNum.setText(items.get(position).getDeskNum());
         holder.notice.setText(items.get(position).getNoticeContent());
-        if (items.get(position).isDealed()){
+        if (items.get(position).isNoticeIsDealed()){
             holder.isDealedImg.setImageResource(R.drawable.dealed_icon);
             holder.notice.setText("处理完毕");
         } else {
