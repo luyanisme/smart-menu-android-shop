@@ -52,29 +52,6 @@ public class NoticeFragment extends Fragment {
         this.context = contexts;
         this.noticeitems = noticeitems;
 
-        WebSocketService.handler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                if (msg.what == 0) {
-                    NOTICEITEM noticeitem = new Gson().fromJson(msg.getData().get("notice").toString(), NOTICEITEM.class);
-                    if (noticeitem.getDeskId() != null) {
-                        //收到notice
-                        addNoticeItem(noticeitem);
-                        unreadNums ++;
-                    } else {
-                        //返回result结果
-                        hud.dismiss();
-                        ToastWidgt.showWithInfo(getActivity(), noticeitem.getMsg(), Toast.LENGTH_SHORT);
-                        unreadNums --;
-                    }
-                    if (delegate != null) {
-                        delegate.msgNumChange(unreadNums);
-                    }
-                }
-            }
-        };
-
         hud = KProgressHUD.create(contexts)
                 .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
                 .setLabel(contexts.getResources().getString(R.string.waiting))
@@ -193,7 +170,6 @@ public class NoticeFragment extends Fragment {
                         // TODO Auto-generated method stub
                         noticeitems.get(i).setClientType(1);//设置客户端为安卓
                         noticeitems.get(i).setNoticeIsDealed(true);
-                        noticeitems.get(i).setNoticeContent(getActivity().getResources().getString(R.string.deal_complete));
                         noticeAdapter.notifyDataSetChanged();
                         sm.dismiss();
                         WebSocketService.sendMsg(new Gson().toJson(noticeitems.get(i), NOTICEITEM.class));
@@ -213,7 +189,7 @@ public class NoticeFragment extends Fragment {
         });
     }
 
-    private void addNoticeItem(NOTICEITEM noticeitem) {
+    public void addNoticeItem(NOTICEITEM noticeitem) {
         noticeitems.add(0, noticeitem);
         noticeAdapter.notifyDataSetChanged();
     }
@@ -227,8 +203,16 @@ public class NoticeFragment extends Fragment {
             }
         }
         if (delegate != null) {
-            delegate.msgNumChange(unreadNums);
+            delegate.noticeMsgNumChange(unreadNums);
         }
+    }
+
+    public KProgressHUD getHud() {
+        return hud;
+    }
+
+    public void setHud(KProgressHUD hud) {
+        this.hud = hud;
     }
 
     public NoticeDelegate getDelegate() {
@@ -239,8 +223,17 @@ public class NoticeFragment extends Fragment {
         this.delegate = delegate;
     }
 
+    public int getUnreadNums() {
+        return unreadNums;
+    }
+
+    public void setUnreadNums(int unreadNums) {
+        this.unreadNums = unreadNums;
+        statistics();
+    }
+
     public interface NoticeDelegate {
-        public void msgNumChange(int unreadNum);
+        public void noticeMsgNumChange(int unreadNum);
     }
 
 }

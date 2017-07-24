@@ -17,6 +17,9 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.luyan.smartmenu_shop.Common.ServerConfig;
+import com.example.luyan.smartmenu_shop.Metadata.NOTICEITEM;
+import com.example.luyan.smartmenu_shop.Model.UserModel;
+import com.google.gson.Gson;
 
 import de.tavendo.autobahn.WebSocketConnection;
 import de.tavendo.autobahn.WebSocketException;
@@ -99,6 +102,11 @@ public class WebSocketService extends Service {
                 public void onOpen() {
                     Log.d("111", "open");
                     WebSocketService.isClosed = false;
+                    NOTICEITEM noticeitem = new NOTICEITEM();
+                    noticeitem.setSendTag(true);
+                    noticeitem.setShopId((long) UserModel.getInstance().getShopId());
+                    noticeitem.setClientType(1);
+                    sendMsg(new Gson().toJson(noticeitem, NOTICEITEM.class));
                 }
 
                 //websocket接收到消息后的回调
@@ -151,10 +159,6 @@ public class WebSocketService extends Service {
             if (webSocketConnection != null) {
                 webSocketConnection.sendTextMessage(s);
             }
-    }
-
-    public void receiveMsg() {
-
     }
 
     @Override

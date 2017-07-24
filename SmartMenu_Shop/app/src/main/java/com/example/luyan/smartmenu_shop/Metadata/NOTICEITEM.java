@@ -20,13 +20,11 @@ public class NOTICEITEM implements Parcelable {
     private String dateTime;//时间
     private String noticeContent;//简述
 
-    private Integer statue;//返回状态
-    private String msg;//消息
-    private String data;//内容
-
+    private boolean isSendTag;//是否为发送标识的notice
     public NOTICEITEM() {
 
     }
+
 
     protected NOTICEITEM(Parcel in) {
         noticeKey = in.readString();
@@ -34,8 +32,7 @@ public class NOTICEITEM implements Parcelable {
         noticeIsDealed = in.readByte() != 0;
         dateTime = in.readString();
         noticeContent = in.readString();
-        msg = in.readString();
-        data = in.readString();
+        isSendTag = in.readByte() != 0;
     }
 
     @Override
@@ -45,8 +42,7 @@ public class NOTICEITEM implements Parcelable {
         dest.writeByte((byte) (noticeIsDealed ? 1 : 0));
         dest.writeString(dateTime);
         dest.writeString(noticeContent);
-        dest.writeString(msg);
-        dest.writeString(data);
+        dest.writeByte((byte) (isSendTag ? 1 : 0));
     }
 
     @Override
@@ -145,28 +141,13 @@ public class NOTICEITEM implements Parcelable {
     public void setNoticeContent(String noticeContent) {
         this.noticeContent = noticeContent;
     }
+    
 
-    public Integer getStatue() {
-        return statue;
+    public boolean isSendTag() {
+        return isSendTag;
     }
 
-    public void setStatue(Integer statue) {
-        this.statue = statue;
-    }
-
-    public String getMsg() {
-        return msg;
-    }
-
-    public void setMsg(String msg) {
-        this.msg = msg;
-    }
-
-    public String getData() {
-        return data;
-    }
-
-    public void setData(String data) {
-        this.data = data;
+    public void setSendTag(boolean sendTag) {
+        isSendTag = sendTag;
     }
 }

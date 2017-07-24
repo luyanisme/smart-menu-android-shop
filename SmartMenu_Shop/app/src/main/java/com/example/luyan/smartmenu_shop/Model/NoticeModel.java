@@ -35,11 +35,11 @@ public class NoticeModel {
 
     public void goNextPage(ZHHttpCallBack httpCallBack) {
         index ++;
-        ZHHttpHelper.getInstance().get(ServerConfig.HTTP + "getNotices?page=" + index + "&pageSize=" + pageSize, null, httpCallBack);
+        ZHHttpHelper.getInstance().get(ServerConfig.HTTP + "getNotices?shopId="+UserModel.getInstance().getShopId()+"&page=" + index + "&pageSize=" + pageSize, null, httpCallBack);
     }
 
     public void firstPage(ZHHttpCallBack httpCallBack) {
         index = 1;
-        ZHHttpHelper.getInstance().get(ServerConfig.HTTP + "getNotices?page=" + index + "&pageSize=" + pageSize, null, httpCallBack);
+        ZHHttpHelper.getInstance().get(ServerConfig.HTTP + "getNotices?shopId="+UserModel.getInstance().getShopId()+"&page=" + index + "&pageSize=" + pageSize, null, httpCallBack);
     }
 }

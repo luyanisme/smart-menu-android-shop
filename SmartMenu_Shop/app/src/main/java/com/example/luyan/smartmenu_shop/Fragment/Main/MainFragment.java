@@ -2,6 +2,7 @@ package com.example.luyan.smartmenu_shop.Fragment.Main;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,12 +10,15 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.luyan.smartmenu_shop.Fragment.BaseFragment;
 import com.example.luyan.smartmenu_shop.Metadata.NOTICEITEM;
 import com.example.luyan.smartmenu_shop.Metadata.ORDERITEM;
+import com.example.luyan.smartmenu_shop.Metadata.RESULT;
 import com.example.luyan.smartmenu_shop.R;
 import com.example.luyan.smartmenu_shop.Service.WebSocketService;
+import com.example.luyan.smartmenu_shop.Widgt.ToastWidgt;
 import com.flyco.tablayout.SlidingTabLayout;
 import com.flyco.tablayout.widget.MsgView;
 import com.google.gson.Gson;
@@ -40,6 +44,10 @@ public class MainFragment extends BaseFragment implements NoticeFragment.NoticeD
     private OrderFragment orderFragment;
     private OrderFragment orderedFragment;
 
+    private int noticeUnreadNums;//消息未读个数;
+    private int orderUnreadNums;//订单未读个数;
+    private int orderedUnreadNums;//已接单消息未读个数;
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -52,6 +60,57 @@ public class MainFragment extends BaseFragment implements NoticeFragment.NoticeD
         websocketServiceIntent = new Intent(getActivity(), WebSocketService.class);
         getActivity().startService(websocketServiceIntent);
         WebSocketService.webSocketConnect();
+        WebSocketService.handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                if (msg.what == 0) {
+                    RESULT result = new Gson().fromJson(msg.getData().get("notice").toString(), RESULT.class);
+                    switch (result.getNoticeType()) {
+                        /*消息*/
+                        case 0:
+                            NOTICEITEM noticeitem = new Gson().fromJson(msg.getData().get("notice").toString(), NOTICEITEM.class);
+                            //收到notice
+                            noticeFragment.addNoticeItem(noticeitem);
+                            noticeUnreadNums = noticeFragment.getUnreadNums();
+                            noticeUnreadNums ++;
+                            noticeFragment.setUnreadNums(noticeUnreadNums);
+                            break;
+
+                        /*订单*/
+                        case 1:
+                            break;
+
+                        /*已接订单*/
+                        case 2:
+                            break;
+
+                        /*消息返回*/
+                        default:
+                            noticeFragment.getHud().dismiss();
+                            ToastWidgt.showWithInfo(getActivity(), result.getMsg(), Toast.LENGTH_SHORT);
+                            if (result.getStatue() == 0){
+                                switch (result.getCallbackNoticeType()){
+                                    case 0:
+                                        noticeUnreadNums = noticeFragment.getUnreadNums();
+                                        noticeUnreadNums --;
+                                        noticeFragment.setUnreadNums(noticeUnreadNums);
+                                        break;
+
+                                    case 1:
+                                        break;
+
+                                    case 2:
+                                        break;
+                                }
+                            }
+                            break;
+
+                    }
+
+                }
+            }
+        };
     }
 
     private void initTabs() {
@@ -125,7 +184,7 @@ public class MainFragment extends BaseFragment implements NoticeFragment.NoticeD
     }
 
     @Override
-    public void msgNumChange(int unreadNum) {
+    public void noticeMsgNumChange(int unreadNum) {
 //        if (unreadNum == 0){
 //            tabLayout.hideMsg(0);
 //        } else {
@@ -136,7 +195,7 @@ public class MainFragment extends BaseFragment implements NoticeFragment.NoticeD
 //                rtv_2_3.setBackgroundColor(getResources().getColor(R.color.colorRed));
 //            }
 //        }
-        if(unreadNum > 0){
+        if (unreadNum > 0) {
             tabLayout.showDot(0);
             tabLayout.setMsgMargin(0, 25, 0);
         } else {

@@ -8,13 +8,31 @@ import android.os.Parcelable;
  */
 
 public class RESULT implements Parcelable{
-    private Integer statue;
-    private String msg;
-    private String data;
+
+    private int noticeType;//消息类型
+    private int callbackNoticeType;//消息类型
+    private int statue;//消息成功还是失败0,1
+    private String msg;//返回的消息内容
+
 
     protected RESULT(Parcel in) {
+        noticeType = in.readInt();
+        callbackNoticeType = in.readInt();
+        statue = in.readInt();
         msg = in.readString();
-        data = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(noticeType);
+        dest.writeInt(callbackNoticeType);
+        dest.writeInt(statue);
+        dest.writeString(msg);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<RESULT> CREATOR = new Creator<RESULT>() {
@@ -29,22 +47,27 @@ public class RESULT implements Parcelable{
         }
     };
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public int getNoticeType() {
+        return noticeType;
     }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(msg);
-        parcel.writeString(data);
+    public void setNoticeType(int noticeType) {
+        this.noticeType = noticeType;
     }
 
-    public Integer getStatue() {
+    public int getCallbackNoticeType() {
+        return callbackNoticeType;
+    }
+
+    public void setCallbackNoticeType(int callbackNoticeType) {
+        this.callbackNoticeType = callbackNoticeType;
+    }
+
+    public int getStatue() {
         return statue;
     }
 
-    public void setStatue(Integer statue) {
+    public void setStatue(int statue) {
         this.statue = statue;
     }
 
@@ -54,13 +77,5 @@ public class RESULT implements Parcelable{
 
     public void setMsg(String msg) {
         this.msg = msg;
-    }
-
-    public String getData() {
-        return data;
-    }
-
-    public void setData(String data) {
-        this.data = data;
     }
 }
