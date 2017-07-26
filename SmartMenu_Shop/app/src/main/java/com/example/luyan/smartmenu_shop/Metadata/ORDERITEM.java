@@ -3,27 +3,40 @@ package com.example.luyan.smartmenu_shop.Metadata;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by luyan on 31/05/2017.
  */
 
 public class ORDERITEM implements Parcelable {
+    private Integer clientType = 1;//客户端类型
+    private String orderKey;//消息的唯一标识
+    private Long orderId;//店铺id
+    private Long shopId;//店铺id
+    private Long noticeType;//消息类型
+    private Long deskId;//桌面id
     private String deskNum;//桌号
-    private boolean isDealed;//是否处理过
-    private boolean isReaded;//是否已读
-    private String statue;
-    private String date;//时间
-    private String desc;//简述
-    private ArrayList orderContent;//订单内容
+    private boolean orderIsDealed;//是否处理过
+    private String dateTime;//时间
+    private String orderContent;//简述
 
-    public ORDERITEM(Parcel in) {
+    public ORDERITEM() {
+
+    }
+
+    protected ORDERITEM(Parcel in) {
+        orderKey = in.readString();
+        shopId = in.readLong();
+        noticeType = in.readLong();
+        deskId = in.readLong();
         deskNum = in.readString();
-        isDealed = in.readByte() != 0;
-        statue = in.readString();
-        date = in.readString();
-        desc = in.readString();
+        orderIsDealed = in.readByte() != 0;
+        dateTime = in.readString();
+        orderContent = in.readString();
     }
 
     public static final Creator<ORDERITEM> CREATOR = new Creator<ORDERITEM>() {
@@ -38,10 +51,6 @@ public class ORDERITEM implements Parcelable {
         }
     };
 
-    public ORDERITEM() {
-
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -49,11 +58,62 @@ public class ORDERITEM implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(orderKey);
+        parcel.writeLong(shopId);
+        parcel.writeLong(noticeType);
+        parcel.writeLong(deskId);
         parcel.writeString(deskNum);
-        parcel.writeByte((byte) (isDealed ? 1 : 0));
-        parcel.writeString(statue);
-        parcel.writeString(date);
-        parcel.writeString(desc);
+        parcel.writeByte((byte) (orderIsDealed ? 1 : 0));
+        parcel.writeString(dateTime);
+        parcel.writeString(orderContent);
+    }
+
+    public Integer getClientType() {
+        return clientType;
+    }
+
+    public void setClientType(Integer clientType) {
+        this.clientType = clientType;
+    }
+
+    public String getOrderKey() {
+        return orderKey;
+    }
+
+    public void setOrderKey(String orderKey) {
+        this.orderKey = orderKey;
+    }
+
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
+    }
+
+    public Long getShopId() {
+        return shopId;
+    }
+
+    public void setShopId(Long shopId) {
+        this.shopId = shopId;
+    }
+
+    public Long getNoticeType() {
+        return noticeType;
+    }
+
+    public void setNoticeType(Long noticeType) {
+        this.noticeType = noticeType;
+    }
+
+    public Long getDeskId() {
+        return deskId;
+    }
+
+    public void setDeskId(Long deskId) {
+        this.deskId = deskId;
     }
 
     public String getDeskNum() {
@@ -64,43 +124,27 @@ public class ORDERITEM implements Parcelable {
         this.deskNum = deskNum;
     }
 
-    public boolean isDealed() {
-        return isDealed;
+    public boolean isOrderIsDealed() {
+        return orderIsDealed;
     }
 
-    public void setDealed(boolean dealed) {
-        isDealed = dealed;
+    public void setOrderIsDealed(boolean orderIsDealed) {
+        this.orderIsDealed = orderIsDealed;
     }
 
-    public String getDate() {
-        return date;
+    public String getDateTime() {
+        return dateTime;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setDateTime(String dateTime) {
+        this.dateTime = dateTime;
     }
 
-    public String getDesc() {
-        return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
-
-    public ArrayList getOrderContent() {
+    public String getOrderContent() {
         return orderContent;
     }
 
-    public void setOrderContent(ArrayList orderContent) {
+    public void setOrderContent(String orderContent) {
         this.orderContent = orderContent;
-    }
-
-    public String getStatue() {
-        return statue;
-    }
-
-    public void setStatue(String statue) {
-        this.statue = statue;
     }
 }

@@ -12,6 +12,7 @@
     <string name="setting">设置</string>
     <string name="place_order">立即下单</string>
     <string name="ordered">已下单</string>
+    <string name="ordered_success">下单成功</string>
     <string name="menu">菜单</string>
     <string name="choose_standard">选规格</string>
     <string name="add_to_order">加入订单</string>

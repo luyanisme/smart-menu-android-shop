@@ -28,6 +28,9 @@ public class NOTICEITEM implements Parcelable {
 
     protected NOTICEITEM(Parcel in) {
         noticeKey = in.readString();
+        shopId = in.readLong();
+        noticeType = in.readLong();
+        deskId = in.readLong();
         deskNum = in.readString();
         noticeIsDealed = in.readByte() != 0;
         dateTime = in.readString();
@@ -38,6 +41,9 @@ public class NOTICEITEM implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(noticeKey);
+        dest.writeLong(shopId);
+        dest.writeLong(noticeType);
+        dest.writeLong(deskId);
         dest.writeString(deskNum);
         dest.writeByte((byte) (noticeIsDealed ? 1 : 0));
         dest.writeString(dateTime);
@@ -141,7 +147,7 @@ public class NOTICEITEM implements Parcelable {
     public void setNoticeContent(String noticeContent) {
         this.noticeContent = noticeContent;
     }
-    
+
 
     public boolean isSendTag() {
         return isSendTag;

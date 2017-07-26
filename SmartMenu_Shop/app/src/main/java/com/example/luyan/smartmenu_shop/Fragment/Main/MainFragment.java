@@ -32,7 +32,7 @@ import de.tavendo.autobahn.WebSocketHandler;
  * Created by luyan on 26/05/2017.
  */
 
-public class MainFragment extends BaseFragment implements NoticeFragment.NoticeDelegate {
+public class MainFragment extends BaseFragment implements NoticeFragment.NoticeDelegate, OrderFragment.OrderDelegate {
 
     private ViewPager viewPager;
     private SlidingTabLayout tabLayout;
@@ -47,6 +47,8 @@ public class MainFragment extends BaseFragment implements NoticeFragment.NoticeD
     private int noticeUnreadNums;//消息未读个数;
     private int orderUnreadNums;//订单未读个数;
     private int orderedUnreadNums;//已接单消息未读个数;
+
+    private boolean isLoaded = false;//是否加载过
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -73,35 +75,46 @@ public class MainFragment extends BaseFragment implements NoticeFragment.NoticeD
                             //收到notice
                             noticeFragment.addNoticeItem(noticeitem);
                             noticeUnreadNums = noticeFragment.getUnreadNums();
-                            noticeUnreadNums ++;
+                            noticeUnreadNums++;
                             noticeFragment.setUnreadNums(noticeUnreadNums);
                             break;
 
                         /*订单*/
                         case 1:
-                            break;
-
-                        /*已接订单*/
-                        case 2:
+                            ORDERITEM orderitem = new Gson().fromJson(msg.getData().get("notice").toString(), ORDERITEM.class);
+                            //收到notice
+                            orderFragment.addOrderItem(orderitem);
+                            orderUnreadNums = orderFragment.getUnreadNums();
+                            orderUnreadNums++;
+                            orderFragment.setUnreadNums(orderUnreadNums);
                             break;
 
                         /*消息返回*/
                         default:
                             noticeFragment.getHud().dismiss();
                             ToastWidgt.showWithInfo(getActivity(), result.getMsg(), Toast.LENGTH_SHORT);
-                            if (result.getStatue() == 0){
-                                switch (result.getCallbackNoticeType()){
+                            if (result.getStatue() == 0) {
+                                //消息类型
+                                switch (result.getCallbackNoticeType()) {
+                                    //通知
                                     case 0:
                                         noticeUnreadNums = noticeFragment.getUnreadNums();
-                                        noticeUnreadNums --;
+                                        noticeUnreadNums--;
                                         noticeFragment.setUnreadNums(noticeUnreadNums);
                                         break;
 
+                                    //订单
                                     case 1:
+                                        orderedUnreadNums = orderFragment.getUnreadNums();
+                                        orderedUnreadNums--;
+                                        orderFragment.setUnreadNums(orderedUnreadNums);
+                                        orderFragment.changeItemStatue();
+                                        Intent mIntent = new Intent("order_callback");
+                                        mIntent.putExtra("statue", result.getStatue());
+                                        //发送广播
+                                        getActivity().sendBroadcast(mIntent);
                                         break;
 
-                                    case 2:
-                                        break;
                                 }
                             }
                             break;
@@ -117,29 +130,45 @@ public class MainFragment extends BaseFragment implements NoticeFragment.NoticeD
 
         tabs.add(getActivity().getResources().getString(R.string.notice));
         tabs.add(getActivity().getResources().getString(R.string.order));
-        tabs.add(getActivity().getResources().getString(R.string.order_receive));
+//        tabs.add(getActivity().getResources().getString(R.string.order_receive));
         noticeFragment = new NoticeFragment(getActivity(), initNoticeData());
         noticeFragment.setDelegate(this);
         orderFragment = new OrderFragment(getActivity(), initOrderData());
-        orderedFragment = new OrderFragment(getActivity(), initOrderedData());
+        orderFragment.setDelegate(this);
+//        orderedFragment = new OrderFragment(getActivity(), initOrderedData());
         fragments.add(noticeFragment);
         fragments.add(orderFragment);
-        fragments.add(orderedFragment);
+//        fragments.add(orderedFragment);
 
         tabLayout = (SlidingTabLayout) getView().findViewById(R.id.tablayout);
 
         viewPager = (ViewPager) getView().findViewById(R.id.viewpager);
         //设置TabLayout的模式
         viewPager.setAdapter(new TabAdapter(getActivity().getSupportFragmentManager()));
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (position == 1) {
+                    if (!isLoaded) {
+                        orderFragment.startLoadData();
+                        isLoaded = true;
+                    }
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
         //关联ViewPager和TabLayout
         tabLayout.setViewPager(viewPager);
 
-//        tabLayout.showMsg(0, 5);
-//        tabLayout.setMsgMargin(0, 20, 10);
-//        MsgView rtv_2_3 = tabLayout.getMsgView(0);
-//        if (rtv_2_3 != null) {
-//            rtv_2_3.setBackgroundColor(getResources().getColor(R.color.colorRed));
-//        }
     }
 
     private ArrayList<NOTICEITEM> initNoticeData() {
@@ -149,39 +178,14 @@ public class MainFragment extends BaseFragment implements NoticeFragment.NoticeD
 
     private ArrayList<ORDERITEM> initOrderData() {
         ArrayList<ORDERITEM> orderItems = new ArrayList<>();
-
-        ORDERITEM orderItem = new ORDERITEM();
-        orderItem.setDealed(false);
-        orderItem.setDeskNum("6号桌");
-        orderItem.setStatue("待接单...");
-
-        ORDERITEM orderItem1 = new ORDERITEM();
-        orderItem1.setDealed(true);
-        orderItem1.setDeskNum("5号桌");
-        orderItem1.setStatue("订单取消");
-
-        orderItems.add(orderItem);
-        orderItems.add(orderItem1);
         return orderItems;
     }
 
-    private ArrayList<ORDERITEM> initOrderedData() {
-        ArrayList<ORDERITEM> orderItems = new ArrayList<>();
-
-        ORDERITEM orderItem = new ORDERITEM();
-        orderItem.setDealed(true);
-        orderItem.setDeskNum("6号桌");
-        orderItem.setStatue("创建于2017-6-1 12:30");
-
-        ORDERITEM orderItem1 = new ORDERITEM();
-        orderItem1.setDealed(true);
-        orderItem1.setDeskNum("5号桌");
-        orderItem1.setStatue("创建于2017-6-1 12:30");
-
-        orderItems.add(orderItem);
-        orderItems.add(orderItem1);
-        return orderItems;
-    }
+//    private ArrayList<ORDERITEM> initOrderedData() {
+//        ArrayList<ORDERITEM> orderItems = new ArrayList<>();
+//
+//        return orderItems;
+//    }
 
     @Override
     public void noticeMsgNumChange(int unreadNum) {
@@ -197,7 +201,17 @@ public class MainFragment extends BaseFragment implements NoticeFragment.NoticeD
 //        }
         if (unreadNum > 0) {
             tabLayout.showDot(0);
-            tabLayout.setMsgMargin(0, 25, 0);
+            tabLayout.setMsgMargin(0, 55, 0);
+        } else {
+            tabLayout.hideMsg(0);
+        }
+    }
+
+    @Override
+    public void orderMsgNumChange(int unreadNum) {
+        if (unreadNum > 0) {
+            tabLayout.showDot(1);
+            tabLayout.setMsgMargin(1, 55, 0);
         } else {
             tabLayout.hideMsg(0);
         }

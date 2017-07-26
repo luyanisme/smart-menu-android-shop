@@ -23,7 +23,8 @@
         <activity android:name=".Activity.MainActivity" />
         <activity android:name=".Activity.Setting.SettingActivity" />
         <activity android:name=".Activity.Desk.DeskDetailActivity" />
-        <activity android:name=".Activity.Desk.MenuActivity"></activity>
+        <activity android:name=".Activity.Desk.MenuActivity" />
+        <activity android:name=".Activity.OrderActivity.OrderActivity"></activity>
     </application>
 
 </manifest>

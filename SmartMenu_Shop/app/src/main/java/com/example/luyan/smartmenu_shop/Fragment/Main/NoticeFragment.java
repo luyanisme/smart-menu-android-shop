@@ -51,13 +51,6 @@ public class NoticeFragment extends Fragment {
         // Required empty public constructor
         this.context = contexts;
         this.noticeitems = noticeitems;
-
-        hud = KProgressHUD.create(contexts)
-                .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
-                .setLabel(contexts.getResources().getString(R.string.waiting))
-                .setCancellable(true)
-                .setAnimationSpeed(2)
-                .setDimAmount(0.5f);
     }
 
     @Override
@@ -65,6 +58,12 @@ public class NoticeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_notice, container, false);
+        hud = KProgressHUD.create(context)
+                .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setLabel(context.getResources().getString(R.string.waiting))
+                .setCancellable(true)
+                .setAnimationSpeed(2)
+                .setDimAmount(0.5f);
         listView = (ListView) view.findViewById(R.id.notice_list);
         refreshView = (XRefreshView) view.findViewById(R.id.refresh_view);
         refreshView.setPullLoadEnable(true);//设置是否上拉加载更多

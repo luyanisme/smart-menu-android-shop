@@ -44,19 +44,19 @@ public class OrderAdapter extends BaseAdapter {
             holder = new ViewHolder();
             /**得到各个控件的对象*/
             holder.deskNum = (TextView) convertView.findViewById(R.id.desk_num);
-            holder.state = (TextView) convertView.findViewById(R.id.state);
-            holder.newOrderImg = (ImageView) convertView.findViewById(R.id.new_order);
+            holder.dateTime = (TextView) convertView.findViewById(R.id.date_time);
+            holder.isDealedImg = (ImageView) convertView.findViewById(R.id.is_dealed);
             convertView.setTag(holder);//绑定ViewHolder对象
         } else {
             holder = (ViewHolder) convertView.getTag();//取出ViewHolder对象
         }
 
         holder.deskNum.setText(items.get(position).getDeskNum());
-        holder.state.setText(items.get(position).getStatue());
-        if (items.get(position).isDealed()){
-            holder.newOrderImg.setVisibility(View.GONE);
+        holder.dateTime.setText("创建于"+items.get(position).getDateTime());
+        if (items.get(position).isOrderIsDealed()){
+            holder.isDealedImg.setImageResource(R.drawable.dealed_icon);
         } else {
-            holder.newOrderImg.setVisibility(View.VISIBLE);
+            holder.isDealedImg.setImageResource(R.drawable.undeal_icon);
         }
         return convertView;
     }
@@ -71,7 +71,7 @@ public class OrderAdapter extends BaseAdapter {
      */
     public final class ViewHolder {
         public TextView deskNum;
-        public TextView state;
-        public ImageView newOrderImg;
+        public TextView dateTime;
+        public ImageView isDealedImg;
     }
 }

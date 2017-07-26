@@ -28,7 +28,7 @@
                 android:textColor="@color/colorBlack"/>
 
             <TextView
-                android:id="@+id/state"
+                android:id="@+id/date_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=""
@@ -37,13 +37,13 @@
         </LinearLayout>
 
         <ImageView
-            android:id="@+id/new_order"
+            android:id="@+id/is_dealed"
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
             android:layout_marginRight="70dp"
-            android:src="@drawable/new_icon"/>
+            android:src="@drawable/undeal_icon"/>
 
         <ImageView
             android:layout_width="25dp"

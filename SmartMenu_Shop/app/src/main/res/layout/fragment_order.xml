@@ -2,14 +2,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:xrefreshview="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context="com.example.luyan.smartmenu_shop.Fragment.Main.OrderFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <ListView
-        android:id="@+id/order_list"
+    <com.andview.refreshview.XRefreshView
+        android:id="@+id/refresh_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#ffffff"></ListView>
+        xrefreshview:isHeightMatchParent="true"
+        xrefreshview:isWidthMatchParent="true">
+        <ListView
+            android:id="@+id/order_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#ffffff"></ListView>
+    </com.andview.refreshview.XRefreshView>
 
 </LinearLayout>

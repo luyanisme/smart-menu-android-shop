@@ -6,5 +6,5 @@ package com.example.luyan.smartmenu_shop.Common;
 
 public class Public {
     public static int totalOrderNum = 0;
-
+    public static String deskNum;
 }
