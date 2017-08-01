@@ -24,11 +24,11 @@ public class DESKITEMDao extends AbstractDao<DESKITEM, Integer> {
      * Can be used for QueryBuilder and for referencing column names.
      */
     public static class Properties {
-        public final static Property Id = new Property(0, int.class, "id", true, "ID");
+        public final static Property DeskId = new Property(0, int.class, "deskId", true, "DESK_ID");
         public final static Property DeskName = new Property(1, String.class, "deskName", false, "DESK_NAME");
-        public final static Property Capacity = new Property(2, int.class, "capacity", false, "CAPACITY");
-        public final static Property Statue = new Property(3, int.class, "statue", false, "STATUE");
-        public final static Property IsHall = new Property(4, boolean.class, "isHall", false, "IS_HALL");
+        public final static Property DeskCapacity = new Property(2, int.class, "deskCapacity", false, "DESK_CAPACITY");
+        public final static Property DeskStatue = new Property(3, int.class, "deskStatue", false, "DESK_STATUE");
+        public final static Property DeskCateId = new Property(4, int.class, "deskCateId", false, "DESK_CATE_ID");
     }
 
 
@@ -44,11 +44,11 @@ public class DESKITEMDao extends AbstractDao<DESKITEM, Integer> {
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"DESKITEM\" (" + //
-                "\"ID\" INTEGER PRIMARY KEY NOT NULL ," + // 0: id
+                "\"DESK_ID\" INTEGER PRIMARY KEY NOT NULL ," + // 0: deskId
                 "\"DESK_NAME\" TEXT," + // 1: deskName
-                "\"CAPACITY\" INTEGER NOT NULL ," + // 2: capacity
-                "\"STATUE\" INTEGER NOT NULL ," + // 3: statue
-                "\"IS_HALL\" INTEGER NOT NULL );"); // 4: isHall
+                "\"DESK_CAPACITY\" INTEGER NOT NULL ," + // 2: deskCapacity
+                "\"DESK_STATUE\" INTEGER NOT NULL ," + // 3: deskStatue
+                "\"DESK_CATE_ID\" INTEGER NOT NULL );"); // 4: deskCateId
     }
 
     /** Drops the underlying database table. */
@@ -60,29 +60,29 @@ public class DESKITEMDao extends AbstractDao<DESKITEM, Integer> {
     @Override
     protected final void bindValues(DatabaseStatement stmt, DESKITEM entity) {
         stmt.clearBindings();
-        stmt.bindLong(1, entity.getId());
+        stmt.bindLong(1, entity.getDeskId());
  
         String deskName = entity.getDeskName();
         if (deskName != null) {
             stmt.bindString(2, deskName);
         }
-        stmt.bindLong(3, entity.getCapacity());
-        stmt.bindLong(4, entity.getStatue());
-        stmt.bindLong(5, entity.getIsHall() ? 1L: 0L);
+        stmt.bindLong(3, entity.getDeskCapacity());
+        stmt.bindLong(4, entity.getDeskStatue());
+        stmt.bindLong(5, entity.getDeskCateId());
     }
 
     @Override
     protected final void bindValues(SQLiteStatement stmt, DESKITEM entity) {
         stmt.clearBindings();
-        stmt.bindLong(1, entity.getId());
+        stmt.bindLong(1, entity.getDeskId());
  
         String deskName = entity.getDeskName();
         if (deskName != null) {
             stmt.bindString(2, deskName);
         }
-        stmt.bindLong(3, entity.getCapacity());
-        stmt.bindLong(4, entity.getStatue());
-        stmt.bindLong(5, entity.getIsHall() ? 1L: 0L);
+        stmt.bindLong(3, entity.getDeskCapacity());
+        stmt.bindLong(4, entity.getDeskStatue());
+        stmt.bindLong(5, entity.getDeskCateId());
     }
 
     @Override
@@ -93,33 +93,33 @@ public class DESKITEMDao extends AbstractDao<DESKITEM, Integer> {
     @Override
     public DESKITEM readEntity(Cursor cursor, int offset) {
         DESKITEM entity = new DESKITEM( //
-            cursor.getInt(offset + 0), // id
+            cursor.getInt(offset + 0), // deskId
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // deskName
-            cursor.getInt(offset + 2), // capacity
-            cursor.getInt(offset + 3), // statue
-            cursor.getShort(offset + 4) != 0 // isHall
+            cursor.getInt(offset + 2), // deskCapacity
+            cursor.getInt(offset + 3), // deskStatue
+            cursor.getInt(offset + 4) // deskCateId
         );
         return entity;
     }
      
     @Override
     public void readEntity(Cursor cursor, DESKITEM entity, int offset) {
-        entity.setId(cursor.getInt(offset + 0));
+        entity.setDeskId(cursor.getInt(offset + 0));
         entity.setDeskName(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setCapacity(cursor.getInt(offset + 2));
-        entity.setStatue(cursor.getInt(offset + 3));
-        entity.setIsHall(cursor.getShort(offset + 4) != 0);
+        entity.setDeskCapacity(cursor.getInt(offset + 2));
+        entity.setDeskStatue(cursor.getInt(offset + 3));
+        entity.setDeskCateId(cursor.getInt(offset + 4));
      }
     
     @Override
     protected final Integer updateKeyAfterInsert(DESKITEM entity, long rowId) {
-        return entity.getId();
+        return entity.getDeskId();
     }
     
     @Override
     public Integer getKey(DESKITEM entity) {
         if(entity != null) {
-            return entity.getId();
+            return entity.getDeskId();
         } else {
             return null;
         }

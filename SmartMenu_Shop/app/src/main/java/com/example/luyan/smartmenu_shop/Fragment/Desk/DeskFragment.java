@@ -1,6 +1,7 @@
 package com.example.luyan.smartmenu_shop.Fragment.Desk;
 
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,17 +13,31 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ListView;
+import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.luyan.smartmenu_shop.Activity.Desk.DeskDetailActivity;
 import com.example.luyan.smartmenu_shop.Adapter.ConstellationAdapter;
 import com.example.luyan.smartmenu_shop.Adapter.DeskAdapter;
 import com.example.luyan.smartmenu_shop.Adapter.GirdDropDownAdapter;
 import com.example.luyan.smartmenu_shop.Adapter.ListDropDownAdapter;
+import com.example.luyan.smartmenu_shop.Common.Public;
 import com.example.luyan.smartmenu_shop.Fragment.BaseFragment;
+import com.example.luyan.smartmenu_shop.Metadata.CONDITIONITEM;
+import com.example.luyan.smartmenu_shop.Metadata.DESKCATEITEM;
 import com.example.luyan.smartmenu_shop.Metadata.DESKITEM;
+import com.example.luyan.smartmenu_shop.Metadata.ORDERITEM;
+import com.example.luyan.smartmenu_shop.Metadata.RESPONSE;
+import com.example.luyan.smartmenu_shop.Model.DeskModel;
+import com.example.luyan.smartmenu_shop.Model.UserModel;
 import com.example.luyan.smartmenu_shop.R;
+import com.example.luyan.smartmenu_shop.Utils.GreenDaoUtils.GreenDaoUtils;
 import com.example.luyan.smartmenu_shop.Utils.IntentUtils;
+import com.example.luyan.smartmenu_shop.Utils.ZHHttpUtils.ZHHttpCallBack;
+import com.example.luyan.smartmenu_shop.Widgt.SMDialog;
+import com.example.luyan.smartmenu_shop.Widgt.ToastWidgt;
+import com.kaopiz.kprogresshud.KProgressHUD;
 import com.yyydjk.library.DropDownMenu;
 
 import java.util.ArrayList;
@@ -42,18 +57,27 @@ public class DeskFragment extends BaseFragment {
 
     private GirdDropDownAdapter areaAdapter;
     private ListDropDownAdapter statueAdapter;
-//    private ListDropDownAdapter sexAdapter;
+    //    private ListDropDownAdapter sexAdapter;
 //    private ConstellationAdapter constellationAdapter;
     private DeskAdapter deskAdapter;
 
-    private String areas[] = {"不限", "大厅", "包厢"};
-    private String statues[] = {"不限", "空座", "预订", "满座"};
+    //    private String areas[] = {"不限", "大厅", "包厢"};
+    private ArrayList<CONDITIONITEM> areas = new ArrayList<>();
+    //{"不限", "空座", "预订", "座满"}
+    private ArrayList<CONDITIONITEM> statues = new ArrayList<>();
 //    private String sexs[] = {"不限", "男", "女"};
 //    private String constellations[] = {"不限", "白羊座", "金牛座", "双子座", "巨蟹座", "狮子座", "处女座", "天秤座", "天蝎座", "射手座", "摩羯座", "水瓶座", "双鱼座"};
 
     private int constellationPosition = 0;
+    private int statueIndex = 0;
 
     ArrayList<DESKITEM> deskitems = new ArrayList<>();
+    ArrayList<DESKITEM> selectItems = new ArrayList<>();
+
+    private int cateId = 0;//桌位分类id
+    private int stateCode = 3;//状态code为3
+
+    private KProgressHUD hud;
 
     public DeskFragment() {
         // Required empty public constructor
@@ -73,21 +97,57 @@ public class DeskFragment extends BaseFragment {
         super.onActivityCreated(savedInstanceState);
         setContentLayout(R.layout.fragment_desk);
         mDropDownMenu = (DropDownMenu) getView().findViewById(R.id.dropDownMenu);
+        initConditonData();
         initDeskItems();
-        initView();
+
+        hud = KProgressHUD.create(getActivity())
+                .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setLabel(getActivity().getResources().getString(R.string.waiting))
+                .setCancellable(true)
+                .setAnimationSpeed(2)
+                .setDimAmount(0.5f).show();
+    }
+
+    private void initConditonData() {
+        //不限
+        CONDITIONITEM noCondition = new CONDITIONITEM();
+        noCondition.setStatueCode(0);
+        noCondition.setStatue(getActivity().getResources().getString(R.string.no_limit));
+        areas.add(noCondition);
+
+        //不限
+        CONDITIONITEM condition = new CONDITIONITEM();
+        condition.setStatueCode(3);
+        condition.setStatue(getActivity().getResources().getString(R.string.no_limit));
+        statues.add(condition);
+
+        CONDITIONITEM condition0 = new CONDITIONITEM();
+        condition0.setStatueCode(DESKITEM.DESK_FREE);
+        condition0.setStatue(getActivity().getResources().getString(R.string.free_desk));
+        statues.add(condition0);
+
+        CONDITIONITEM condition1 = new CONDITIONITEM();
+        condition1.setStatueCode(DESKITEM.DESK_BOOK);
+        condition1.setStatue(getActivity().getResources().getString(R.string.book_desk));
+        statues.add(condition1);
+
+        CONDITIONITEM condition2 = new CONDITIONITEM();
+        condition2.setStatueCode(DESKITEM.DESK_FULL);
+        condition2.setStatue(getActivity().getResources().getString(R.string.full_desk));
+        statues.add(condition2);
     }
 
     private void initView() {
         //init area menu
         final ListView areaView = new ListView(getActivity());
-        areaAdapter = new GirdDropDownAdapter(getActivity(), Arrays.asList(areas));
+        areaAdapter = new GirdDropDownAdapter(getActivity(), areas);
         areaView.setDividerHeight(0);
         areaView.setAdapter(areaAdapter);
 
         //init statue menu
         final ListView statueView = new ListView(getActivity());
         statueView.setDividerHeight(0);
-        statueAdapter = new ListDropDownAdapter(getActivity(), Arrays.asList(statues));
+        statueAdapter = new ListDropDownAdapter(getActivity(), statues);
         statueView.setAdapter(statueAdapter);
 
 //        //init sex menu
@@ -120,18 +180,66 @@ public class DeskFragment extends BaseFragment {
         areaView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selectItems.clear();
                 areaAdapter.setCheckItem(position);
-                mDropDownMenu.setTabText(position == 0 ? headers[0] : areas[position]);
+                mDropDownMenu.setTabText(position == 0 ? headers[0] : areas.get(position).getStatue());
                 mDropDownMenu.closeMenu();
+
+                cateId = areas.get(position).getStatueCode();
+                for (int i = 0; i < deskitems.size(); i++) {
+
+                    if (cateId != 0 && stateCode != 3) {
+                        if (deskitems.get(i).getDeskCateId() == cateId) {
+                            if (deskitems.get(i).getDeskStatue() == stateCode) {
+                                selectItems.add(deskitems.get(i));
+                            }
+                        }
+                    } else if (cateId == 0 && stateCode != 3) {
+                        if (deskitems.get(i).getDeskStatue() == stateCode) {
+                            selectItems.add(deskitems.get(i));
+                        }
+                    } else if (cateId != 0 && stateCode == 3) {
+                        if (deskitems.get(i).getDeskCateId() == cateId) {
+                            selectItems.add(deskitems.get(i));
+                        }
+                    } else {
+                        selectItems.add(deskitems.get(i));
+                    }
+                }
+                deskAdapter.notifyDataSetChanged();
             }
         });
 
         statueView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selectItems.clear();
                 statueAdapter.setCheckItem(position);
-                mDropDownMenu.setTabText(position == 0 ? headers[1] : statues[position]);
+                mDropDownMenu.setTabText(position == 0 ? headers[1] : statues.get(position).getStatue());
                 mDropDownMenu.closeMenu();
+
+                stateCode = statues.get(position).getStatueCode();
+                for (int i = 0; i < deskitems.size(); i++) {
+
+                    if (cateId != 0 && stateCode != 3) {
+                        if (deskitems.get(i).getDeskCateId() == cateId) {
+                            if (deskitems.get(i).getDeskStatue() == stateCode) {
+                                selectItems.add(deskitems.get(i));
+                            }
+                        }
+                    } else if (cateId == 0 && stateCode != 3) {
+                        if (deskitems.get(i).getDeskStatue() == stateCode) {
+                            selectItems.add(deskitems.get(i));
+                        }
+                    } else if (cateId != 0 && stateCode == 3) {
+                        if (deskitems.get(i).getDeskCateId() == cateId) {
+                            selectItems.add(deskitems.get(i));
+                        }
+                    } else {
+                        selectItems.add(deskitems.get(i));
+                    }
+                }
+                deskAdapter.notifyDataSetChanged();
             }
         });
 
@@ -155,7 +263,7 @@ public class DeskFragment extends BaseFragment {
         //内容显示
         final View deskView = getActivity().getLayoutInflater().inflate(R.layout.desk_grid_layout, null);
         GridView deskGridView = (GridView) deskView.findViewById(R.id.desk_grid);
-        deskAdapter = new DeskAdapter(getActivity(), deskitems);
+        deskAdapter = new DeskAdapter(getActivity(), selectItems);
         deskGridView.setAdapter(deskAdapter);
         deskGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -164,54 +272,87 @@ public class DeskFragment extends BaseFragment {
                 getActivity().overridePendingTransition(R.anim.move_right_in_activity, R.anim.move_left_out_activity);
             }
         });
+
+        deskGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int i, long l) {
+                statueIndex = selectItems.get(i).getDeskStatue();
+                final SMDialog dh = new SMDialog(getActivity());
+                dh.setTitle("请选择状态");
+                dh.setRadioGroup(Public.statues, selectItems.get(i).getDeskStatue(), new RadioGroup.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(RadioGroup group, int checkedId) {
+                        statueIndex = checkedId - dh.TAG;
+                    }
+                });
+
+                dh.setPositiveButton("确定", new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        DeskModel.getInstance().changeDeskStatue(new ZHHttpCallBack<RESPONSE>() {
+                            @Override
+                            public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
+                                if (response.getStatus() == 0) {
+                                    ToastWidgt.showWithInfo(getActivity(), response.getMsg(), Toast.LENGTH_SHORT);
+                                    selectItems.get(i).setDeskStatue(statueIndex);
+                                    deskAdapter.notifyDataSetChanged();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(int statusCode, String rawJsonResponse, RESPONSE response) {
+
+                            }
+                        }, selectItems.get(i).getDeskId(), statueIndex);
+
+                        dh.dismiss();
+                    }
+                });
+
+                dh.setNegativeButton("取消", new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        // TODO Auto-generated method stub
+                        dh.dismiss();
+                    }
+                });
+                return true;
+            }
+        });
         //init dropdownview
         mDropDownMenu.setDropDownMenu(Arrays.asList(headers), popupViews, deskView);
+
     }
 
     private void initDeskItems() {
+        selectItems.clear();
+        DeskModel.getInstance().getDesk(new ZHHttpCallBack<RESPONSE<DESKCATEITEM>>() {
+            @Override
+            public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
+                if (response.getStatus() == 0) {
+                    ArrayList<DESKCATEITEM> deskcateitems = response.getData();
+                    for (int i = 0; i < deskcateitems.size(); i++) {
+                        deskitems.addAll(deskcateitems.get(i).getDesks());
+                        CONDITIONITEM condition = new CONDITIONITEM();
+                        condition.setStatueCode(deskcateitems.get(i).getDeskCateId());
+                        condition.setStatue(deskcateitems.get(i).getDeskCateName());
+                        areas.add(condition);
+                    }
+                    selectItems.addAll(deskitems);
+                    initView();
+                    hud.dismiss();
+                }
+            }
 
-        DESKITEM deskitem1 = new DESKITEM();
-        deskitem1.setDeskName("1号桌");
-        deskitem1.setCapacity(3);
-        deskitem1.setStatue(DESKITEM.DESK_FREE);
-        deskitem1.setHall(true);
-
-        DESKITEM deskitem2 = new DESKITEM();
-        deskitem2.setDeskName("2号桌");
-        deskitem2.setCapacity(3);
-        deskitem2.setStatue(DESKITEM.DESK_FREE);
-        deskitem2.setHall(true);
-
-        DESKITEM deskitem3 = new DESKITEM();
-        deskitem3.setDeskName("3号桌");
-        deskitem3.setCapacity(3);
-        deskitem3.setStatue(DESKITEM.DESK_FULL);
-        deskitem3.setHall(true);
-
-        DESKITEM deskitem4 = new DESKITEM();
-        deskitem4.setDeskName("4号桌");
-        deskitem4.setCapacity(3);
-        deskitem4.setStatue(DESKITEM.DESK_FULL);
-        deskitem4.setHall(true);
-
-        DESKITEM deskitem5 = new DESKITEM();
-        deskitem5.setDeskName("兰花厅");
-        deskitem5.setCapacity(12);
-        deskitem5.setStatue(DESKITEM.DESK_FREE);
-        deskitem5.setHall(false);
-
-        DESKITEM deskitem6 = new DESKITEM();
-        deskitem6.setDeskName("牡丹厅");
-        deskitem6.setCapacity(12);
-        deskitem6.setStatue(DESKITEM.DESK_BOOK);
-        deskitem6.setHall(false);
-
-        deskitems.add(deskitem1);
-        deskitems.add(deskitem2);
-        deskitems.add(deskitem3);
-        deskitems.add(deskitem4);
-        deskitems.add(deskitem5);
-        deskitems.add(deskitem6);
+            @Override
+            public void onFailure(int statusCode, String rawJsonResponse, RESPONSE response) {
+                if (response.getStatus() == 1) {
+                    ToastWidgt.showWithInfo(getActivity(), response.getMsg(), Toast.LENGTH_SHORT);
+                }
+            }
+        }, UserModel.getInstance().getShopId());
     }
 
     @Override

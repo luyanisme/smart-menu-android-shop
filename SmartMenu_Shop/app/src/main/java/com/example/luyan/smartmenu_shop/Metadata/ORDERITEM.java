@@ -21,6 +21,9 @@ public class ORDERITEM implements Parcelable {
     private Long deskId;//桌面id
     private String deskNum;//桌号
     private boolean orderIsDealed;//是否处理过
+    private boolean orderIsPayed;//是否支付过
+    private boolean orderIsOrdered;//是否已下单
+    private boolean orderIsUsing;//是否正在使用
     private String dateTime;//时间
     private String orderContent;//简述
 
@@ -35,6 +38,9 @@ public class ORDERITEM implements Parcelable {
         deskId = in.readLong();
         deskNum = in.readString();
         orderIsDealed = in.readByte() != 0;
+        orderIsPayed = in.readByte() != 0;
+        orderIsOrdered = in.readByte() != 0;
+        orderIsUsing = in.readByte() != 0;
         dateTime = in.readString();
         orderContent = in.readString();
     }
@@ -64,6 +70,9 @@ public class ORDERITEM implements Parcelable {
         parcel.writeLong(deskId);
         parcel.writeString(deskNum);
         parcel.writeByte((byte) (orderIsDealed ? 1 : 0));
+        parcel.writeByte((byte) (orderIsPayed ? 1 : 0));
+        parcel.writeByte((byte) (orderIsOrdered ? 1 : 0));
+        parcel.writeByte((byte) (orderIsUsing ? 1 : 0));
         parcel.writeString(dateTime);
         parcel.writeString(orderContent);
     }
@@ -130,6 +139,30 @@ public class ORDERITEM implements Parcelable {
 
     public void setOrderIsDealed(boolean orderIsDealed) {
         this.orderIsDealed = orderIsDealed;
+    }
+
+    public boolean isOrderIsPayed() {
+        return orderIsPayed;
+    }
+
+    public void setOrderIsPayed(boolean orderIsPayed) {
+        this.orderIsPayed = orderIsPayed;
+    }
+
+    public boolean isOrderIsOrdered() {
+        return orderIsOrdered;
+    }
+
+    public void setOrderIsOrdered(boolean orderIsOrdered) {
+        this.orderIsOrdered = orderIsOrdered;
+    }
+
+    public boolean isOrderIsUsing() {
+        return orderIsUsing;
+    }
+
+    public void setOrderIsUsing(boolean orderIsUsing) {
+        this.orderIsUsing = orderIsUsing;
     }
 
     public String getDateTime() {

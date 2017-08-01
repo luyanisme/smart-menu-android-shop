@@ -114,11 +114,9 @@ public class MainFragment extends BaseFragment implements NoticeFragment.NoticeD
                                         //发送广播
                                         getActivity().sendBroadcast(mIntent);
                                         break;
-
                                 }
                             }
                             break;
-
                     }
 
                 }

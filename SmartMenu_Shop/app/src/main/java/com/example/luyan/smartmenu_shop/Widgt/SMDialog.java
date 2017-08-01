@@ -76,7 +76,7 @@ public class SMDialog {
         messageContent.addView(view);
     }
 
-    public void setRadioGroup(String[] channelParams, final RadioGroup.OnCheckedChangeListener listener) {
+    public void setRadioGroup(String[] channelParams, int selectIndex, final RadioGroup.OnCheckedChangeListener listener) {
 
         //重新设置messageContent的高度
         messageContent.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, DHDensityUtil.dip2px(context, ITEM_HEIGHT * 4)));
@@ -94,7 +94,7 @@ public class SMDialog {
             radio.setText(channelParams[i]);
             radio.setTextSize(18);
             radio.setHeight(DHDensityUtil.dip2px(context, ITEM_HEIGHT));
-            if (i == 0) {
+            if (i == selectIndex) {
                 radio.setChecked(true);
             }
             group.addView(radio);

@@ -56,16 +56,18 @@ public class DeskAdapter extends BaseAdapter {
         if (position > 3){
             holder.mTopLine.setVisibility(View.GONE);
         }
-        switch (deskItems.get(position).getStatue()){
+        switch (deskItems.get(position).getDeskStatue()){
             case 0:
                 holder.mBadge.setVisibility(View.GONE);
                 break;
 
             case 1:
+                holder.mBadge.setVisibility(View.VISIBLE);
                 holder.mBadge.setImageResource(R.drawable.badge_book_icon);
                 break;
 
             case 2:
+                holder.mBadge.setVisibility(View.VISIBLE);
                 holder.mBadge.setImageResource(R.drawable.badge_full_icon);
                 break;
         }

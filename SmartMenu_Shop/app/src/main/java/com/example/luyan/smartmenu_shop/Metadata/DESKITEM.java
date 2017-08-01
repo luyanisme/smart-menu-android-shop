@@ -14,22 +14,48 @@ import org.greenrobot.greendao.annotation.Generated;
 @Entity
 public class DESKITEM implements Parcelable{
     @Id
-    private int id;
+    private int deskId;
     private String deskName;//桌位名称
-    private int capacity;//桌位人数
-    private int statue;//桌位状态(0.空闲1.预订2.满座)
-    private boolean isHall;//是否是大厅
+    private int deskCapacity;//桌位人数
+    private int deskStatue;//桌位状态(0.空闲1.预订2.满座)
+    private int deskCateId;//桌位分类
 
     public static int DESK_FREE = 0;
     public static int DESK_BOOK = 1;
     public static int DESK_FULL = 2;
+    @Generated(hash = 652050253)
+    public DESKITEM(int deskId, String deskName, int deskCapacity, int deskStatue,
+            int deskCateId) {
+        this.deskId = deskId;
+        this.deskName = deskName;
+        this.deskCapacity = deskCapacity;
+        this.deskStatue = deskStatue;
+        this.deskCateId = deskCateId;
+    }
+    @Generated(hash = 1761532344)
+    public DESKITEM() {
+    }
 
-    public DESKITEM(Parcel in) {
-        id = in.readInt();
+    protected DESKITEM(Parcel in) {
+        deskId = in.readInt();
         deskName = in.readString();
-        capacity = in.readInt();
-        statue = in.readInt();
-        isHall = in.readByte() != 0;
+        deskCapacity = in.readInt();
+        deskStatue = in.readInt();
+        deskCateId = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(deskId);
+        dest.writeString(deskName);
+        dest.writeInt(deskCapacity);
+        dest.writeInt(deskStatue);
+        dest.writeInt(deskCateId);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<DESKITEM> CREATOR = new Creator<DESKITEM>() {
@@ -44,79 +70,36 @@ public class DESKITEM implements Parcelable{
         }
     };
 
-    public DESKITEM() {
-
+    public int getDeskId() {
+        return this.deskId;
     }
-
-    @Generated(hash = 1909793377)
-    public DESKITEM(int id, String deskName, int capacity, int statue,
-            boolean isHall) {
-        this.id = id;
-        this.deskName = deskName;
-        this.capacity = capacity;
-        this.statue = statue;
-        this.isHall = isHall;
+    public void setDeskId(int deskId) {
+        this.deskId = deskId;
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(id);
-        parcel.writeString(deskName);
-        parcel.writeInt(capacity);
-        parcel.writeInt(statue);
-        parcel.writeByte((byte) (isHall ? 1 : 0));
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getDeskName() {
-        return deskName;
+        return this.deskName;
     }
-
     public void setDeskName(String deskName) {
         this.deskName = deskName;
     }
-
-    public int getCapacity() {
-        return capacity;
+    public int getDeskCapacity() {
+        return this.deskCapacity;
+    }
+    public void setDeskCapacity(int deskCapacity) {
+        this.deskCapacity = deskCapacity;
+    }
+    public int getDeskStatue() {
+        return this.deskStatue;
+    }
+    public void setDeskStatue(int deskStatue) {
+        this.deskStatue = deskStatue;
+    }
+    public int getDeskCateId() {
+        return this.deskCateId;
+    }
+    public void setDeskCateId(int deskCateId) {
+        this.deskCateId = deskCateId;
     }
 
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
-    }
-
-    public int getStatue() {
-        return statue;
-    }
-
-    public void setStatue(int statue) {
-        this.statue = statue;
-    }
-
-    public boolean isHall() {
-        return isHall;
-    }
-
-    public void setHall(boolean hall) {
-        isHall = hall;
-    }
-
-    public boolean getIsHall() {
-        return this.isHall;
-    }
-
-    public void setIsHall(boolean isHall) {
-        this.isHall = isHall;
-    }
+    
 }

@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 
+import com.example.luyan.smartmenu_shop.Metadata.CONDITIONITEM;
 import com.example.luyan.smartmenu_shop.R;
 
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.List;
 public class GirdDropDownAdapter extends BaseAdapter {
 
     private Context context;
-    private List<String> list;
+    private List<CONDITIONITEM> list;
     private int checkItemPosition = 0;
 
     public void setCheckItem(int position) {
@@ -24,7 +25,7 @@ public class GirdDropDownAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-    public GirdDropDownAdapter(Context context, List<String> list) {
+    public GirdDropDownAdapter(Context context, List<CONDITIONITEM> list) {
         this.context = context;
         this.list = list;
     }
@@ -60,7 +61,7 @@ public class GirdDropDownAdapter extends BaseAdapter {
     }
 
     private void fillValue(int position, ViewHolder viewHolder) {
-        viewHolder.mText.setText(list.get(position));
+        viewHolder.mText.setText(list.get(position).getStatue());
         if (checkItemPosition != -1) {
             if (checkItemPosition == position) {
                 viewHolder.mText.setTextColor(context.getResources().getColor(R.color.colorYellow));
