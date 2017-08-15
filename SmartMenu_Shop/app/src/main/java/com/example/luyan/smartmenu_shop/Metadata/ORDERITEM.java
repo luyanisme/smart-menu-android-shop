@@ -20,6 +20,7 @@ public class ORDERITEM implements Parcelable {
     private Long noticeType;//消息类型
     private Long deskId;//桌面id
     private String deskNum;//桌号
+    private String orderPrice;//价格
     private boolean orderIsDealed;//是否处理过
     private boolean orderIsPayed;//是否支付过
     private boolean orderIsOrdered;//是否已下单
@@ -37,6 +38,7 @@ public class ORDERITEM implements Parcelable {
         noticeType = in.readLong();
         deskId = in.readLong();
         deskNum = in.readString();
+        orderPrice = in.readString();
         orderIsDealed = in.readByte() != 0;
         orderIsPayed = in.readByte() != 0;
         orderIsOrdered = in.readByte() != 0;
@@ -69,6 +71,7 @@ public class ORDERITEM implements Parcelable {
         parcel.writeLong(noticeType);
         parcel.writeLong(deskId);
         parcel.writeString(deskNum);
+        parcel.writeString(orderPrice);
         parcel.writeByte((byte) (orderIsDealed ? 1 : 0));
         parcel.writeByte((byte) (orderIsPayed ? 1 : 0));
         parcel.writeByte((byte) (orderIsOrdered ? 1 : 0));
@@ -131,6 +134,14 @@ public class ORDERITEM implements Parcelable {
 
     public void setDeskNum(String deskNum) {
         this.deskNum = deskNum;
+    }
+
+    public String getOrderPrice() {
+        return orderPrice;
+    }
+
+    public void setOrderPrice(String orderPrice) {
+        this.orderPrice = orderPrice;
     }
 
     public boolean isOrderIsDealed() {

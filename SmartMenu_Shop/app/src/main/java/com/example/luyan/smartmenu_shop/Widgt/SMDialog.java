@@ -45,7 +45,6 @@ public class SMDialog {
         messageContent = (RelativeLayout) dialog.findViewById(R.id.message_content);
         buttonLayout = (LinearLayout) dialog.findViewById(R.id.button_layout);
 
-
     }
 
     public void setTitle(String title) {
