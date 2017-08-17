@@ -39,6 +39,7 @@ public class OrderActivity extends BaseActivity {
     ArrayList<CASEITEM> caseitems = new ArrayList<>();
     CaseOrderedAdapter caseOrderedAdapter;
     private KProgressHUD hud;
+    private TextView orderBtn;
 
     public BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -62,9 +63,16 @@ public class OrderActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentLayout(R.layout.activity_order);
 
-        findViewById(R.id.order_state_btn).setOnClickListener(this);
+        orderBtn = (TextView) findViewById(R.id.order_state_btn);
+        orderBtn.setOnClickListener(this);
 
         orderitem = getIntent().getBundleExtra(IntentUtils.INTENT_BUNDLE_PARAM).getParcelable("order");
+
+        if (orderitem.isOrderIsDealed()){
+            orderBtn.setBackgroundResource(R.color.gray);
+            orderBtn.setEnabled(false);
+        }
+
         CASEITEM[] items = new Gson().fromJson(orderitem.getOrderContent(), CASEITEM[].class);
         for (int i = 0; i < items.length; i++) {
             caseitems.add(items[i]);

@@ -137,6 +137,7 @@ public class OrderFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        statistics();
     }
 
     private void initList() {

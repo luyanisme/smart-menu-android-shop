@@ -58,35 +58,15 @@ public class CaseOrderedAdapter extends BaseAdapter {
 
         holder.caseName.setText(caseItems.get(position).getCaseName());
         holder.casePrice.setText(String.valueOf(caseItems.get(position).getCasePrice()*caseItems.get(position).getOrderNum())+"¥");
-        holder.caseNum.setText(""+caseItems.get(position).getOrderNum());
+        holder.caseNum.setText("x"+caseItems.get(position).getOrderNum());
         if (caseItems.get(position).getStandardDesc() != null) {
             holder.standardProperty.setVisibility(View.VISIBLE);
             holder.standardProperty.setText(caseItems.get(position).getStandardDesc());
         } else {
             holder.standardProperty.setVisibility(View.GONE);
         }
-        holder.add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int orderNum = caseItems.get(position).getOrderNum();
-                orderNum ++;
-                caseItems.get(position).setOrderNum(orderNum);
-                notifyDataSetChanged();
-            }
-        });
-        holder.reduce.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int orderNum = caseItems.get(position).getOrderNum();
-                orderNum --;
-                if (orderNum == 0){
-                    caseItems.remove(position);
-                } else {
-                    caseItems.get(position).setOrderNum(orderNum);
-                }
-                notifyDataSetChanged();
-            }
-        });
+        holder.add.setVisibility(View.GONE);
+        holder.reduce.setVisibility(View.GONE);
         return convertView;
     }
 
