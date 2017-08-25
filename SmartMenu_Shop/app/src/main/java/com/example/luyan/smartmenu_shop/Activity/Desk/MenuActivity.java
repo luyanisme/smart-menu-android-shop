@@ -139,7 +139,7 @@ public class MenuActivity extends BaseActivity implements CaseAdapter.TapDelegat
         MenuModel.getInstance().getMenuList(new ZHHttpCallBack<RESPONSE<CASECATEITEM>>() {
             @Override
             public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
-                if (response.getStatus() == 0){
+                if (response.getStatue() == 0){
                     casecateitems = response.getData();
                     casecateitems.get(currentIndex).setSelected(true);
                     for (CASEITEM caseItem: casecateitems.get(currentIndex).getCases()) {

@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,6 +15,15 @@ import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.example.luyan.smartmenu_shop.Activity.BaseActivity;
 import com.example.luyan.smartmenu_shop.Adapter.CaseOrderedAdapter;
+import com.example.luyan.smartmenu_shop.Adapter.OrderAdapter;
+import com.example.luyan.smartmenu_shop.Adapter.OrderedAdapter;
+import com.example.luyan.smartmenu_shop.Common.Public;
+import com.example.luyan.smartmenu_shop.Metadata.DESKCATEITEM;
+import com.example.luyan.smartmenu_shop.Metadata.DESKITEM;
+import com.example.luyan.smartmenu_shop.Metadata.ORDERITEM;
+import com.example.luyan.smartmenu_shop.Model.UserModel;
+import com.example.luyan.smartmenu_shop.Service.WebSocketService;
+import com.example.luyan.smartmenu_shop.Utils.IntentUtils;
 import com.example.luyan.smartmenu_shop.Utils.ZHHttpUtils.ZHHttpCallBack;
 import com.example.luyan.smartmenu_shop.Metadata.CASEITEM;
 import com.example.luyan.smartmenu_shop.Metadata.CASEPROPERTYITEM;
@@ -25,30 +35,80 @@ import com.example.luyan.smartmenu_shop.R;
 import com.example.luyan.smartmenu_shop.Utils.ActivityCollectorUtils;
 import com.example.luyan.smartmenu_shop.Utils.UnitConvertUtils;
 import com.example.luyan.smartmenu_shop.Widgt.ToastWidgt;
+import com.google.gson.Gson;
 import com.kaopiz.kprogresshud.KProgressHUD;
 
 import java.util.ArrayList;
 
-public class DeskDetailActivity extends BaseActivity {
+public class DeskDetailActivity extends BaseActivity implements OrderAdapter.TapDelegate {
 
     SwipeMenuListView caseOrdredList;//已点菜列表
     ArrayList<CASEITEM> caseitems = new ArrayList<>();
-    CaseOrderedAdapter caseOrderedAdapter;
+    OrderAdapter orderedAdapter;
+    private KProgressHUD hud;
+    private TextView orderBtn;//立即下单
+    private int caseNums;//商品数量
+    private RelativeLayout totalPriceWrapper;
+    private TextView totalPrice;
+    private DESKITEM deskItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentLayout(R.layout.activity_desk_detail);
 
-        findViewById(R.id.order_state_btn).setOnClickListener(this);
-        initData();
-        caseOrdredList = (SwipeMenuListView) findViewById(R.id.case_order_list);
-        caseOrderedAdapter = new CaseOrderedAdapter(this, caseitems);
-        caseOrdredList.setAdapter(caseOrderedAdapter);
+        deskItem = getIntent().getBundleExtra(IntentUtils.INTENT_BUNDLE_PARAM).getParcelable("deskInfo");
 
-        createMenuItem();
+        orderBtn = (TextView) findViewById(R.id.order_state_btn);
+        orderBtn.setOnClickListener(this);
+        orderBtn.setVisibility(View.GONE);
+
+        totalPriceWrapper = (RelativeLayout) findViewById(R.id.total_price_wrapper);
+        totalPrice = (TextView) findViewById(R.id.total_price);
+
+        caseOrdredList = (SwipeMenuListView) findViewById(R.id.case_order_list);
+        orderedAdapter = new OrderAdapter(this, caseitems);
+        orderedAdapter.setTapDelegate(this);
+        caseOrdredList.setAdapter(orderedAdapter);
+
+        hud = KProgressHUD.create(DeskDetailActivity.this)
+                .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setCancellable(true)
+                .setAnimationSpeed(2)
+                .setDimAmount(0.5f);
+        hud.show();
+//        createMenuItem();
 
         ActivityCollectorUtils.addActivity(this);
+
+        OrderModel.getInstance().getOrdered(new ZHHttpCallBack<RESPONSE<ORDERITEM>>() {
+            @Override
+            public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
+                if (response.getStatue() == 0) {
+                    hud.dismiss();
+                    if (response.getData().size() == 0) {
+                        ToastWidgt.showWithInfo(DeskDetailActivity.this, getResources().getString(R.string.no_case), Toast.LENGTH_SHORT);
+                        return;
+                    } else {
+                        ORDERITEM orderitem = (ORDERITEM) response.getData().get(0);//只有一个对象
+                        CASEITEM[] tempCaseitems = new Gson().fromJson(orderitem.getOrderContent(), CASEITEM[].class);
+                        for (int i = 0; i < tempCaseitems.length; i++) {
+                            tempCaseitems[i].setOrdered(orderitem.isOrderIsOrdered());
+                            caseitems.add(tempCaseitems[i]);
+                        }
+                        caseNums = caseitems.size();
+                        orderedAdapter.notifyDataSetChanged();
+                        totalPriceWrapper.setVisibility(View.VISIBLE);
+                        totalPrice.setText("总价:"+orderitem.getOrderPrice()+"￥");
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, String rawJsonResponse, RESPONSE response) {
+
+            }
+        }, deskItem.getDeskId());
     }
 
     private void createMenuItem() {
@@ -79,62 +139,45 @@ public class DeskDetailActivity extends BaseActivity {
         caseOrdredList.setMenuCreator(creator);
     }
 
-    private void initData() {
-        CASEITEM caseitem = new CASEITEM();
-        caseitem.setCaseName("红烧河豚");
-        caseitem.setCasePrice((float) 256.0);
-        caseitem.setOrderNum(2);
-        CASESTANDARDITEM casestandarditem = new CASESTANDARDITEM();
-        casestandarditem.setRuleId(1);
-        casestandarditem.setRuleName("数量");
-        casestandarditem.setId(1);
-        casestandarditem.setValue("一条");
-        caseitem.setCasestandarditem(casestandarditem);
-        CASEPROPERTYITEM casepropertyitem = new CASEPROPERTYITEM();
-        casepropertyitem.setRuleId(1);
-        casepropertyitem.setRuleName("口味");
-        casepropertyitem.setId(1);
-        casepropertyitem.setValue("微辣");
-        caseitem.setCasepropertyitem(casepropertyitem);
-
-        CASEITEM caseitem1 = new CASEITEM();
-        caseitem1.setCaseName("红烧河豚");
-        caseitem1.setCasePrice((float) 256.0);
-        caseitem1.setOrderNum(2);
-        caseitem1.setCasestandarditem(casestandarditem);
-        caseitem1.setCasepropertyitem(casepropertyitem);
-
-        caseitems.add(caseitem);
-        caseitems.add(caseitem1);
-    }
-
     @Override
     public void onClick(final View v) {
         super.onClick(v);
         switch (v.getId()) {
             case R.id.order_state_btn:
-                final KProgressHUD hud = KProgressHUD.create(DeskDetailActivity.this)
-                        .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
-                        .setLabel(getResources().getString(R.string.place_an_order))
-                        .setCancellable(true)
-                        .setAnimationSpeed(2)
-                        .setDimAmount(0.5f);
+                hud.setLabel(getResources().getString(R.string.place_an_order));
                 hud.show();
-                ORDEREDITEM ordereditem = new ORDEREDITEM();
-                ordereditem.setShopId((long) 1);
-                ordereditem.setDeskId((long) 1);
-                ordereditem.setDeskCateId((long) 1);
-                ordereditem.setOrderedItems(caseitems);
+                ArrayList<CASEITEM> newCaseItems = new ArrayList<>();
+                float totalPrice = 0;
+                for (int i = 0; i < caseitems.size(); i++) {
+                    if (!caseitems.get(i).isOrdered()) {
+                        newCaseItems.add(caseitems.get(i));
+                        totalPrice += caseitems.get(i).getCasePrice();
+                    }
+                }
+                ORDERITEM orderitem = new ORDERITEM();
+                orderitem.setClientType(2);
+                /*直接发送到pad端*/
+                orderitem.setNoticeType((long) 2);
+                orderitem.setShopId((long) UserModel.getInstance().getShopId());
+                orderitem.setDeskId((long) deskItem.getDeskId());
+                orderitem.setDeskNum(deskItem.getDeskName());
+                orderitem.setOrderPrice(String.valueOf(totalPrice));
+                orderitem.setOrderContent(new Gson().toJson(newCaseItems));
+                orderitem.setOrderIsDealed(true);
+                orderitem.setOrderIsPayed(false);
+                orderitem.setOrderIsOrdered(true);
+                orderitem.setOrderIsUsing(true);
 
-                OrderModel.getInstance().postOrderlist(this, ordereditem, new ZHHttpCallBack<RESPONSE>() {
+                WebSocketService.sendMsg(new Gson().toJson(orderitem, ORDERITEM.class));
+                OrderModel.getInstance().postOrderlist(this, orderitem, new ZHHttpCallBack<RESPONSE>() {
 
                     @Override
                     public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
-                        if (response.getStatus() == 0){
+                        if (response.getStatue() == 0) {
                             hud.dismiss();
                             ((TextView) v).setText(getResources().getString(R.string.ordered));
                             v.setBackgroundColor(getResources().getColor(R.color.gray));
-                            ToastWidgt.showWithInfo(DeskDetailActivity.this,response.getMsg(),Toast.LENGTH_SHORT);
+                            ToastWidgt.showWithInfo(DeskDetailActivity.this, response.getMsg(), Toast.LENGTH_SHORT);
                             ActivityCollectorUtils.pop();
                         }
                     }
@@ -183,9 +226,23 @@ public class DeskDetailActivity extends BaseActivity {
             if (data.getParcelableArrayListExtra("orderItems") != null) {
                 ArrayList<CASEITEM> caseItems = data.getParcelableArrayListExtra("orderItems");
                 caseitems.addAll(caseItems);
-                caseOrderedAdapter.setCaseItems(caseitems);
-                caseOrderedAdapter.notifyDataSetChanged();
+                orderedAdapter.setCaseItems(caseitems);
+                orderedAdapter.notifyDataSetChanged();
+                orderBtn.setVisibility(View.VISIBLE);
+                totalPriceWrapper.setVisibility(View.GONE);
             }
         }
+    }
+
+    @Override
+    public void tapReduce(int caseNums) {
+        if (this.caseNums == caseNums) {
+            orderBtn.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void tapAdd(int caseNums) {
+
     }
 }

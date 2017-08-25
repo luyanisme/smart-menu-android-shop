@@ -44,6 +44,7 @@ public class ChooseStandardPanel implements View.OnClickListener {
     private TextView orderNumView;
     private String standardStr = "";
     private String propertyStr = "";
+    private Float casePriceFloat;//选择的价格
     private CASESTANDARDITEM choosecasestandarditem;//已选择的规格
     private CASEPROPERTYITEM choosecasepropertyitem;//已选择的属性
     private CASEITEM caseItem;
@@ -154,6 +155,7 @@ public class ChooseStandardPanel implements View.OnClickListener {
                     tv.setSelected(true);
                     standardStr = caseItem.getCaseStandardVals().get(i).getValue();
                     casePrice.setText("¥" + caseItem.getCaseStandardVals().get(i).getCasePrice());
+                    casePriceFloat = caseItem.getCaseStandardVals().get(i).getCasePrice();
                 } else {
                     tv.setSelected(false);
                 }
@@ -226,6 +228,7 @@ public class ChooseStandardPanel implements View.OnClickListener {
                 caseitem.setCasestandarditem(choosecasestandarditem);
                 caseitem.setCasepropertyitem(choosecasepropertyitem);
                 caseitem.setOrderNum(orderNum);
+                caseitem.setCasePrice(casePriceFloat);
                 caseitem.setStandardDesc("(" + standardStr + "+" + propertyStr + ")");
                 caseItem.getOrderCases().add(caseitem);//添加到规格
                 orderedItems.add(caseitem);//添加到总订单
@@ -285,6 +288,7 @@ public class ChooseStandardPanel implements View.OnClickListener {
                             choosecasestandarditem = caseItem.getCaseStandardVals().get(i);
                             standardStr = caseItem.getCaseStandardVals().get(i).getValue();
                             casePrice.setText("¥" + caseItem.getCaseStandardVals().get(i).getCasePrice());
+                            casePriceFloat =  caseItem.getCaseStandardVals().get(i).getCasePrice();
                         } else {
                             standardTextViews.get(i).setSelected(false);
                             caseItem.getCaseStandardVals().get(i).setSelected(false);

@@ -22,6 +22,7 @@ public class CASEITEM implements Parcelable {
     private Long caseScaledNums;//已售
     private String updateTime;//更新时间
 
+    private boolean isOrdered;//是否已经下单
     private Integer cateIndex;//种类序号
     private int orderNum;//已订数量
     private CASESTANDARDITEM casestandarditem;//已选规格
@@ -45,11 +46,37 @@ public class CASEITEM implements Parcelable {
         casePropertyVals = in.createTypedArrayList(CASEPROPERTYITEM.CREATOR);
         caseScaling = in.readByte() != 0;
         updateTime = in.readString();
+        isOrdered = in.readByte() != 0;
         orderNum = in.readInt();
         casestandarditem = in.readParcelable(CASESTANDARDITEM.class.getClassLoader());
         casepropertyitem = in.readParcelable(CASEPROPERTYITEM.class.getClassLoader());
         standardDesc = in.readString();
         orderCases = in.createTypedArrayList(CASEITEM.CREATOR);
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(caseId);
+        dest.writeFloat(casePrice);
+        dest.writeString(caseName);
+        dest.writeInt(caseHot);
+        dest.writeInt(caseTypeId);
+        dest.writeString(caseImagePath);
+        dest.writeTypedList(caseStandardVals);
+        dest.writeTypedList(casePropertyVals);
+        dest.writeByte((byte) (caseScaling ? 1 : 0));
+        dest.writeString(updateTime);
+        dest.writeByte((byte) (isOrdered ? 1 : 0));
+        dest.writeInt(orderNum);
+        dest.writeParcelable(casestandarditem, flags);
+        dest.writeParcelable(casepropertyitem, flags);
+        dest.writeString(standardDesc);
+        dest.writeTypedList(orderCases);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<CASEITEM> CREATOR = new Creator<CASEITEM>() {
@@ -63,30 +90,6 @@ public class CASEITEM implements Parcelable {
             return new CASEITEM[size];
         }
     };
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeLong(caseId);
-        parcel.writeFloat(casePrice);
-        parcel.writeString(caseName);
-        parcel.writeInt(caseHot);
-        parcel.writeInt(caseTypeId);
-        parcel.writeString(caseImagePath);
-        parcel.writeTypedList(caseStandardVals);
-        parcel.writeTypedList(casePropertyVals);
-        parcel.writeByte((byte) (caseScaling ? 1 : 0));
-        parcel.writeString(updateTime);
-        parcel.writeInt(orderNum);
-        parcel.writeParcelable(casestandarditem, i);
-        parcel.writeParcelable(casepropertyitem, i);
-        parcel.writeString(standardDesc);
-        parcel.writeTypedList(orderCases);
-    }
 
     public long getCaseId() {
         return caseId;
@@ -174,6 +177,14 @@ public class CASEITEM implements Parcelable {
 
     public void setUpdateTime(String updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public boolean isOrdered() {
+        return isOrdered;
+    }
+
+    public void setOrdered(boolean ordered) {
+        isOrdered = ordered;
     }
 
     public Integer getCateIndex() {

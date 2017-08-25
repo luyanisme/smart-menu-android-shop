@@ -13,14 +13,45 @@
         android:layout_height="0dp"
         android:layout_weight="11"></com.baoyz.swipemenulistview.SwipeMenuListView>
 
-    <TextView
-        android:id="@+id/order_state_btn"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:text="@string/place_order"
-        android:gravity="center"
-        android:textSize="18dp"
-        android:textColor="@color/colorWhite"
-        android:background="@color/colorYellow"/>
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/order_state_btn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorYellow"
+            android:gravity="center"
+            android:text="@string/place_order"
+            android:textColor="@color/colorWhite"
+            android:textSize="18dp" />
+
+        <RelativeLayout
+            android:background="@color/colorWhite"
+            android:id="@+id/total_price_wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_alignParentTop="true"
+                android:background="@color/colorLine"
+                android:layerType="software" />
+
+            <TextView
+                android:id="@+id/total_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="20dp"
+                android:textSize="18dp"
+                android:text="总价:0.0￥"/>
+        </RelativeLayout>
+    </RelativeLayout>
+
 </LinearLayout>

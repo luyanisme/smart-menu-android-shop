@@ -3,6 +3,7 @@ package com.example.luyan.smartmenu_shop.Model;
 import android.content.Context;
 
 import com.example.luyan.smartmenu_shop.Common.ServerConfig;
+import com.example.luyan.smartmenu_shop.Metadata.ORDERITEM;
 import com.example.luyan.smartmenu_shop.Utils.ZHHttpUtils.ZHHttpCallBack;
 import com.example.luyan.smartmenu_shop.Utils.ZHHttpUtils.ZHHttpHelper;
 import com.example.luyan.smartmenu_shop.Metadata.ORDEREDITEM;
@@ -34,8 +35,8 @@ public class OrderModel {
         return instance;
     }
 
-    public void postOrderlist(Context context, ORDEREDITEM ordereditem, ZHHttpCallBack httpCallBack){
-        StringEntity stringEntity = new StringEntity(new Gson().toJson(ordereditem), "UTF-8");
+    public void postOrderlist(Context context, ORDERITEM orderitem, ZHHttpCallBack httpCallBack){
+        StringEntity stringEntity = new StringEntity(new Gson().toJson(orderitem), "UTF-8");
         ZHHttpHelper.getInstance().post(context, ServerConfig.HTTP + "postOrderedList", stringEntity, httpCallBack);
     }
 
@@ -47,5 +48,10 @@ public class OrderModel {
     public void firstPage(ZHHttpCallBack httpCallBack) {
         index = 1;
         ZHHttpHelper.getInstance().get(ServerConfig.HTTP + "getOrders?shopId="+UserModel.getInstance().getShopId()+"&page=" + index + "&pageSize=" + pageSize, null, httpCallBack);
+    }
+
+    public void getOrdered(ZHHttpCallBack httpCallBack, int deskId) {
+        index = 1;
+        ZHHttpHelper.getInstance().get(ServerConfig.HTTP + "getOrdered?shopId="+UserModel.getInstance().getShopId()+"&deskId="+ deskId, null, httpCallBack);
     }
 }

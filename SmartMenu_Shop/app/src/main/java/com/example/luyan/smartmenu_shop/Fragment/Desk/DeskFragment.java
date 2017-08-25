@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.luyan.smartmenu_shop.Activity.Desk.DeskDetailActivity;
+import com.example.luyan.smartmenu_shop.Activity.OrderActivity.OrderActivity;
 import com.example.luyan.smartmenu_shop.Adapter.ConstellationAdapter;
 import com.example.luyan.smartmenu_shop.Adapter.DeskAdapter;
 import com.example.luyan.smartmenu_shop.Adapter.GirdDropDownAdapter;
@@ -268,7 +269,9 @@ public class DeskFragment extends BaseFragment {
         deskGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                IntentUtils.startToActivity(getActivity(), DeskDetailActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("deskInfo", selectItems.get(i));
+                IntentUtils.startToActivityWithBundle(getActivity(), DeskDetailActivity.class, bundle);
                 getActivity().overridePendingTransition(R.anim.move_right_in_activity, R.anim.move_left_out_activity);
             }
         });
@@ -293,7 +296,7 @@ public class DeskFragment extends BaseFragment {
                         DeskModel.getInstance().changeDeskStatue(new ZHHttpCallBack<RESPONSE>() {
                             @Override
                             public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
-                                if (response.getStatus() == 0) {
+                                if (response.getStatue() == 0) {
                                     ToastWidgt.showWithInfo(getActivity(), response.getMsg(), Toast.LENGTH_SHORT);
                                     selectItems.get(i).setDeskStatue(statueIndex);
                                     deskAdapter.notifyDataSetChanged();
@@ -331,7 +334,7 @@ public class DeskFragment extends BaseFragment {
         DeskModel.getInstance().getDesk(new ZHHttpCallBack<RESPONSE<DESKCATEITEM>>() {
             @Override
             public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
-                if (response.getStatus() == 0) {
+                if (response.getStatue() == 0) {
                     ArrayList<DESKCATEITEM> deskcateitems = response.getData();
                     for (int i = 0; i < deskcateitems.size(); i++) {
                         deskitems.addAll(deskcateitems.get(i).getDesks());
@@ -348,7 +351,7 @@ public class DeskFragment extends BaseFragment {
 
             @Override
             public void onFailure(int statusCode, String rawJsonResponse, RESPONSE response) {
-                if (response.getStatus() == 1) {
+                if (response.getStatue() == 1) {
                     ToastWidgt.showWithInfo(getActivity(), response.getMsg(), Toast.LENGTH_SHORT);
                 }
             }

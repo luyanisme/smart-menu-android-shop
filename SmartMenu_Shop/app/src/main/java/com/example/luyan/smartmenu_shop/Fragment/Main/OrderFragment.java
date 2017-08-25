@@ -2,7 +2,6 @@ package com.example.luyan.smartmenu_shop.Fragment.Main;
 
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,12 +12,10 @@ import android.widget.ListView;
 
 import com.andview.refreshview.XRefreshView;
 import com.example.luyan.smartmenu_shop.Activity.OrderActivity.OrderActivity;
-import com.example.luyan.smartmenu_shop.Adapter.OrderAdapter;
+import com.example.luyan.smartmenu_shop.Adapter.OrderFragmentAdapter;
 import com.example.luyan.smartmenu_shop.Common.Public;
-import com.example.luyan.smartmenu_shop.Metadata.NOTICEITEM;
 import com.example.luyan.smartmenu_shop.Metadata.ORDERITEM;
 import com.example.luyan.smartmenu_shop.Metadata.RESPONSE;
-import com.example.luyan.smartmenu_shop.Model.NoticeModel;
 import com.example.luyan.smartmenu_shop.Model.OrderModel;
 import com.example.luyan.smartmenu_shop.R;
 import com.example.luyan.smartmenu_shop.Utils.IntentUtils;
@@ -26,8 +23,6 @@ import com.example.luyan.smartmenu_shop.Utils.ZHHttpUtils.ZHHttpCallBack;
 import com.kaopiz.kprogresshud.KProgressHUD;
 
 import java.util.ArrayList;
-
-import static com.example.luyan.smartmenu_shop.Utils.IntentUtils.INTENT_BUNDLE_PARAM;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -38,7 +33,7 @@ public class OrderFragment extends Fragment {
     private ArrayList<ORDERITEM> orderitems;
     private XRefreshView refreshView;
     private ListView listView;
-    private OrderAdapter orderAdapter;
+    private OrderFragmentAdapter orderAdapter;
     private KProgressHUD hud;
     private OrderDelegate delegate;
     private int unreadNums = 0;//未读消息个数
@@ -77,7 +72,7 @@ public class OrderFragment extends Fragment {
                 OrderModel.getInstance().firstPage(new ZHHttpCallBack<RESPONSE<ORDERITEM>>() {
                     @Override
                     public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
-                        if (response.getStatus() == 0) {
+                        if (response.getStatue() == 0) {
                             orderitems.clear();
                             orderitems.addAll(response.getData());
                             orderAdapter.notifyDataSetChanged();
@@ -104,7 +99,7 @@ public class OrderFragment extends Fragment {
                 OrderModel.getInstance().goNextPage(new ZHHttpCallBack<RESPONSE<ORDERITEM>>() {
                     @Override
                     public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
-                        if (response.getStatus() == 0) {
+                        if (response.getStatue() == 0) {
                             orderitems.addAll(response.getData());
                             orderAdapter.notifyDataSetChanged();
                             refreshView.stopLoadMore();
@@ -141,7 +136,7 @@ public class OrderFragment extends Fragment {
     }
 
     private void initList() {
-        orderAdapter = new OrderAdapter(getActivity(), orderitems);
+        orderAdapter = new OrderFragmentAdapter(getActivity(), orderitems);
         listView.setAdapter(orderAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -178,7 +173,7 @@ public class OrderFragment extends Fragment {
         OrderModel.getInstance().firstPage(new ZHHttpCallBack<RESPONSE<ORDERITEM>>() {
             @Override
             public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
-                if (response.getStatus() == 0) {
+                if (response.getStatue() == 0) {
                     orderitems.clear();
                     orderitems.addAll(response.getData());
                     orderAdapter.notifyDataSetChanged();

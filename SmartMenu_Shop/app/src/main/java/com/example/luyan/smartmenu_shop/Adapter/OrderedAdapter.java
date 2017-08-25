@@ -58,7 +58,7 @@ public class OrderedAdapter extends BaseAdapter {
             holder = (OrderedAdapter.ViewHolder) convertView.getTag();//取出ViewHolder对象
         }
 
-        holder.caseName.setText(items.get(position).getCaseName());
+        holder.caseName.setText((position+1)+"."+items.get(position).getCaseName());
         holder.casePrice.setText("¥" + items.get(position).getOrderNum() * items.get(position).getCasePrice());
         holder.orderedNum.setText(String.valueOf(items.get(position).getOrderNum()));
         if (items.get(position).getStandardDesc() != null) {

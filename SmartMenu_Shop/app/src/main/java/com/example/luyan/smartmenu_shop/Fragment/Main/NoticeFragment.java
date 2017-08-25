@@ -73,7 +73,7 @@ public class NoticeFragment extends Fragment {
                 NoticeModel.getInstance().firstPage(new ZHHttpCallBack<RESPONSE<NOTICEITEM>>() {
                     @Override
                     public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
-                        if (response.getStatus() == 0) {
+                        if (response.getStatue() == 0) {
                             noticeitems.clear();
                             noticeitems.addAll(response.getData());
                             noticeAdapter.notifyDataSetChanged();
@@ -100,7 +100,7 @@ public class NoticeFragment extends Fragment {
                 NoticeModel.getInstance().goNextPage(new ZHHttpCallBack<RESPONSE<NOTICEITEM>>() {
                     @Override
                     public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
-                        if (response.getStatus() == 0) {
+                        if (response.getStatue() == 0) {
                             noticeitems.addAll(response.getData());
                             noticeAdapter.notifyDataSetChanged();
                             refreshView.stopLoadMore();
@@ -129,7 +129,7 @@ public class NoticeFragment extends Fragment {
         NoticeModel.getInstance().firstPage(new ZHHttpCallBack<RESPONSE<NOTICEITEM>>() {
             @Override
             public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
-                if (response.getStatus() == 0) {
+                if (response.getStatue() == 0) {
                     noticeitems.addAll(response.getData());
                     noticeAdapter.notifyDataSetChanged();
                     hud.dismiss();
