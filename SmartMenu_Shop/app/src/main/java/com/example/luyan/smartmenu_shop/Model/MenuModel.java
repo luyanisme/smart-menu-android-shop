@@ -27,7 +27,7 @@ public class MenuModel {
     }
 
     public void getMenuList(ZHHttpCallBack httpCallBack){
-        ZHHttpHelper.getInstance().get(ServerConfig.HTTP + "getMenu?shopId="+ UserModel.getInstance().getShopId(), null, httpCallBack);
+        ZHHttpHelper.getInstance().get(ServerConfig.HTTP + "getMenu?shopId="+ UserModel.getInstance().getUserinfo().getShopId(), null, httpCallBack);
     }
 
 }

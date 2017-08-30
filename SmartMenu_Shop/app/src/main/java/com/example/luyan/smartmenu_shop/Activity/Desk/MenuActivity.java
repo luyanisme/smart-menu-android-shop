@@ -28,6 +28,7 @@ import com.example.luyan.smartmenu_shop.Widgt.SMDialog;
 import com.kaopiz.kprogresshud.KProgressHUD;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MenuActivity extends BaseActivity implements CaseAdapter.TapDelegate, ChooseStandardPanel.TapDelegate, POPOrderView.TapDelegate, OrderedAdapter.TapDelegate {
 
@@ -136,11 +137,11 @@ public class MenuActivity extends BaseActivity implements CaseAdapter.TapDelegat
                 .setDimAmount(0.5f);
         hud.show();
 
-        MenuModel.getInstance().getMenuList(new ZHHttpCallBack<RESPONSE<CASECATEITEM>>() {
+        MenuModel.getInstance().getMenuList(new ZHHttpCallBack<RESPONSE<List<CASECATEITEM>>>() {
             @Override
             public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
-                if (response.getStatue() == 0){
-                    casecateitems = response.getData();
+                if (response.getStatus() == 0){
+                    casecateitems = (ArrayList<CASECATEITEM>) response.getData();
                     casecateitems.get(currentIndex).setSelected(true);
                     for (CASEITEM caseItem: casecateitems.get(currentIndex).getCases()) {
                         caseItem.setCateIndex(currentIndex);

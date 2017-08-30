@@ -23,6 +23,7 @@ import com.example.luyan.smartmenu_shop.Utils.ZHHttpUtils.ZHHttpCallBack;
 import com.kaopiz.kprogresshud.KProgressHUD;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -69,12 +70,12 @@ public class OrderFragment extends Fragment {
         refreshView.setXRefreshViewListener(new XRefreshView.XRefreshViewListener() {
             @Override
             public void onRefresh() {
-                OrderModel.getInstance().firstPage(new ZHHttpCallBack<RESPONSE<ORDERITEM>>() {
+                OrderModel.getInstance().firstPage(new ZHHttpCallBack<RESPONSE<List<ORDERITEM>>>() {
                     @Override
                     public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
-                        if (response.getStatue() == 0) {
+                        if (response.getStatus() == 0) {
                             orderitems.clear();
-                            orderitems.addAll(response.getData());
+                            orderitems.addAll((ArrayList<ORDERITEM>)response.getData());
                             orderAdapter.notifyDataSetChanged();
                             refreshView.stopRefresh();
                             statistics();
@@ -96,11 +97,11 @@ public class OrderFragment extends Fragment {
 
             @Override
             public void onLoadMore(boolean isSilence) {
-                OrderModel.getInstance().goNextPage(new ZHHttpCallBack<RESPONSE<ORDERITEM>>() {
+                OrderModel.getInstance().goNextPage(new ZHHttpCallBack<RESPONSE<List<ORDERITEM>>>() {
                     @Override
                     public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
-                        if (response.getStatue() == 0) {
-                            orderitems.addAll(response.getData());
+                        if (response.getStatus() == 0) {
+                            orderitems.addAll((ArrayList<ORDERITEM>)response.getData());
                             orderAdapter.notifyDataSetChanged();
                             refreshView.stopLoadMore();
                             hud.dismiss();
@@ -170,12 +171,12 @@ public class OrderFragment extends Fragment {
 
     public void startLoadData() {
         hud.show();
-        OrderModel.getInstance().firstPage(new ZHHttpCallBack<RESPONSE<ORDERITEM>>() {
+        OrderModel.getInstance().firstPage(new ZHHttpCallBack<RESPONSE<List<ORDERITEM>>>() {
             @Override
             public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
-                if (response.getStatue() == 0) {
+                if (response.getStatus() == 0) {
                     orderitems.clear();
-                    orderitems.addAll(response.getData());
+                    orderitems.addAll((ArrayList<ORDERITEM>)response.getData());
                     orderAdapter.notifyDataSetChanged();
                     hud.dismiss();
                     statistics();

@@ -24,7 +24,9 @@
         <activity android:name=".Activity.Setting.SettingActivity" />
         <activity android:name=".Activity.Desk.DeskDetailActivity" />
         <activity android:name=".Activity.Desk.MenuActivity" />
-        <activity android:name=".Activity.OrderActivity.OrderActivity"></activity>
+        <activity android:name=".Activity.OrderActivity.OrderActivity" />
+        <activity android:name=".Activity.Mine.AllOrderActivity" />
+        <activity android:name=".Activity.Mine.DetailOrderActivity"></activity>
     </application>
 
 </manifest>

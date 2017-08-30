@@ -27,6 +27,8 @@ import com.google.gson.Gson;
 import com.kaopiz.kprogresshud.KProgressHUD;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -73,9 +75,9 @@ public class NoticeFragment extends Fragment {
                 NoticeModel.getInstance().firstPage(new ZHHttpCallBack<RESPONSE<NOTICEITEM>>() {
                     @Override
                     public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
-                        if (response.getStatue() == 0) {
+                        if (response.getStatus() == 0) {
                             noticeitems.clear();
-                            noticeitems.addAll(response.getData());
+                            noticeitems.addAll((ArrayList<NOTICEITEM>) response.getData());
                             noticeAdapter.notifyDataSetChanged();
                             refreshView.stopRefresh();
                             statistics();
@@ -97,11 +99,11 @@ public class NoticeFragment extends Fragment {
 
             @Override
             public void onLoadMore(boolean isSilence) {
-                NoticeModel.getInstance().goNextPage(new ZHHttpCallBack<RESPONSE<NOTICEITEM>>() {
+                NoticeModel.getInstance().goNextPage(new ZHHttpCallBack<RESPONSE<List<NOTICEITEM>>>() {
                     @Override
                     public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
-                        if (response.getStatue() == 0) {
-                            noticeitems.addAll(response.getData());
+                        if (response.getStatus() == 0) {
+                            noticeitems.addAll((ArrayList<NOTICEITEM>) response.getData());
                             noticeAdapter.notifyDataSetChanged();
                             refreshView.stopLoadMore();
                             hud.dismiss();
@@ -126,11 +128,11 @@ public class NoticeFragment extends Fragment {
             }
         });
         hud.show();
-        NoticeModel.getInstance().firstPage(new ZHHttpCallBack<RESPONSE<NOTICEITEM>>() {
+        NoticeModel.getInstance().firstPage(new ZHHttpCallBack<RESPONSE<List<NOTICEITEM>>>() {
             @Override
             public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
-                if (response.getStatue() == 0) {
-                    noticeitems.addAll(response.getData());
+                if (response.getStatus() == 0) {
+                    noticeitems.addAll((ArrayList<NOTICEITEM>)  response.getData());
                     noticeAdapter.notifyDataSetChanged();
                     hud.dismiss();
                     statistics();

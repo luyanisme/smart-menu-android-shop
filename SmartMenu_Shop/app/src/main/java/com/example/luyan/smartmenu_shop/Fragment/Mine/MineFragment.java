@@ -6,7 +6,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
+import com.example.luyan.smartmenu_shop.Activity.Mine.AllOrderActivity;
 import com.example.luyan.smartmenu_shop.Activity.Setting.SettingActivity;
 import com.example.luyan.smartmenu_shop.R;
 import com.example.luyan.smartmenu_shop.Utils.IntentUtils;
@@ -16,6 +18,7 @@ import com.example.luyan.smartmenu_shop.Utils.IntentUtils;
  */
 public class MineFragment extends Fragment implements View.OnClickListener {
 
+    private RelativeLayout allOrder;
 
     public MineFragment() {
         // Required empty public constructor
@@ -29,6 +32,7 @@ public class MineFragment extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.fragment_mine, container, false);
         view.findViewById(R.id.notice).setOnClickListener(this);
         view.findViewById(R.id.setting).setOnClickListener(this);
+        view.findViewById(R.id.all_order).setOnClickListener(this);
         return view;
     }
 
@@ -40,6 +44,10 @@ public class MineFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.setting:
                 IntentUtils.startToActivity(getActivity(), SettingActivity.class);
+                getActivity().overridePendingTransition(R.anim.move_right_in_activity, R.anim.move_left_out_activity);
+                break;
+            case R.id.all_order:
+                IntentUtils.startToActivity(getActivity(), AllOrderActivity.class);
                 getActivity().overridePendingTransition(R.anim.move_right_in_activity, R.anim.move_left_out_activity);
                 break;
         }

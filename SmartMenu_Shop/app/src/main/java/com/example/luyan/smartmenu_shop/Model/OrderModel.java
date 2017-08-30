@@ -42,16 +42,33 @@ public class OrderModel {
 
     public void goNextPage(ZHHttpCallBack httpCallBack) {
         index ++;
-        ZHHttpHelper.getInstance().get(ServerConfig.HTTP + "getOrders?shopId="+UserModel.getInstance().getShopId()+"&page=" + index + "&pageSize=" + pageSize, null, httpCallBack);
+        ZHHttpHelper.getInstance().get(ServerConfig.HTTP + "getOrders?shopId="+UserModel.getInstance().getUserinfo().getShopId()+"&page=" + index + "&pageSize=" + pageSize, null, httpCallBack);
     }
 
     public void firstPage(ZHHttpCallBack httpCallBack) {
         index = 1;
-        ZHHttpHelper.getInstance().get(ServerConfig.HTTP + "getOrders?shopId="+UserModel.getInstance().getShopId()+"&page=" + index + "&pageSize=" + pageSize, null, httpCallBack);
+        ZHHttpHelper.getInstance().get(ServerConfig.HTTP + "getOrders?shopId="+UserModel.getInstance().getUserinfo().getShopId()+"&page=" + index + "&pageSize=" + pageSize, null, httpCallBack);
     }
 
     public void getOrdered(ZHHttpCallBack httpCallBack, int deskId) {
         index = 1;
-        ZHHttpHelper.getInstance().get(ServerConfig.HTTP + "getOrdered?shopId="+UserModel.getInstance().getShopId()+"&deskId="+ deskId, null, httpCallBack);
+        ZHHttpHelper.getInstance().get(ServerConfig.HTTP + "getOrdered?shopId="+UserModel.getInstance().getUserinfo().getShopId()+"&deskId="+ deskId, null, httpCallBack);
     }
+
+    public void goNextAllOrderedPage(ZHHttpCallBack httpCallBack, String startDate, String endDate) {
+        index ++;
+        ZHHttpHelper.getInstance().get(ServerConfig.HTTP + "getAllOrdered?shopId="+UserModel.getInstance().getUserinfo().getShopId()+
+                "&page=" + index +
+                "&pageSize=" + pageSize +
+                "&startDate=" + startDate +
+                "&endDate=" + endDate, null, httpCallBack);
+    }
+
+    public void firstAllOrderedPage(ZHHttpCallBack httpCallBack, String startDate, String endDate) {
+        index = 1;
+        ZHHttpHelper.getInstance().get(ServerConfig.HTTP + "getAllOrdered?shopId="+UserModel.getInstance().getUserinfo().getShopId()+
+                "&page=" + index +
+                "&pageSize=" + pageSize +
+                "&startDate=" + startDate +
+                "&endDate=" + endDate, null, httpCallBack);    }
 }

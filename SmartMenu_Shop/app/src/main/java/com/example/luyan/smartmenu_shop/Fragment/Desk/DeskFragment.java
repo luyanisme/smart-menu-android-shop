@@ -296,7 +296,7 @@ public class DeskFragment extends BaseFragment {
                         DeskModel.getInstance().changeDeskStatue(new ZHHttpCallBack<RESPONSE>() {
                             @Override
                             public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
-                                if (response.getStatue() == 0) {
+                                if (response.getStatus() == 0) {
                                     ToastWidgt.showWithInfo(getActivity(), response.getMsg(), Toast.LENGTH_SHORT);
                                     selectItems.get(i).setDeskStatue(statueIndex);
                                     deskAdapter.notifyDataSetChanged();
@@ -331,11 +331,11 @@ public class DeskFragment extends BaseFragment {
 
     private void initDeskItems() {
         selectItems.clear();
-        DeskModel.getInstance().getDesk(new ZHHttpCallBack<RESPONSE<DESKCATEITEM>>() {
+        DeskModel.getInstance().getDesk(new ZHHttpCallBack<RESPONSE<List<DESKCATEITEM>>>() {
             @Override
             public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
-                if (response.getStatue() == 0) {
-                    ArrayList<DESKCATEITEM> deskcateitems = response.getData();
+                if (response.getStatus() == 0) {
+                    ArrayList<DESKCATEITEM> deskcateitems = (ArrayList<DESKCATEITEM>) response.getData();
                     for (int i = 0; i < deskcateitems.size(); i++) {
                         deskitems.addAll(deskcateitems.get(i).getDesks());
                         CONDITIONITEM condition = new CONDITIONITEM();
@@ -351,11 +351,11 @@ public class DeskFragment extends BaseFragment {
 
             @Override
             public void onFailure(int statusCode, String rawJsonResponse, RESPONSE response) {
-                if (response.getStatue() == 1) {
+                if (response.getStatus() == 1) {
                     ToastWidgt.showWithInfo(getActivity(), response.getMsg(), Toast.LENGTH_SHORT);
                 }
             }
-        }, UserModel.getInstance().getShopId());
+        }, Integer.valueOf(UserModel.getInstance().getUserinfo().getShopId()));
     }
 
     @Override

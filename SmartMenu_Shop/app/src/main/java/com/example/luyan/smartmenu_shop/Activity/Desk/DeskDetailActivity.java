@@ -59,6 +59,8 @@ public class DeskDetailActivity extends BaseActivity implements OrderAdapter.Tap
 
         deskItem = getIntent().getBundleExtra(IntentUtils.INTENT_BUNDLE_PARAM).getParcelable("deskInfo");
 
+        setTitleStr(deskItem.getDeskName());
+
         orderBtn = (TextView) findViewById(R.id.order_state_btn);
         orderBtn.setOnClickListener(this);
         orderBtn.setVisibility(View.GONE);
@@ -84,13 +86,13 @@ public class DeskDetailActivity extends BaseActivity implements OrderAdapter.Tap
         OrderModel.getInstance().getOrdered(new ZHHttpCallBack<RESPONSE<ORDERITEM>>() {
             @Override
             public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
-                if (response.getStatue() == 0) {
+                if (response.getStatus() == 0) {
                     hud.dismiss();
-                    if (response.getData().size() == 0) {
+                    if (response.getData() == null) {
                         ToastWidgt.showWithInfo(DeskDetailActivity.this, getResources().getString(R.string.no_case), Toast.LENGTH_SHORT);
                         return;
                     } else {
-                        ORDERITEM orderitem = (ORDERITEM) response.getData().get(0);//只有一个对象
+                        ORDERITEM orderitem = (ORDERITEM) response.getData();//只有一个对象
                         CASEITEM[] tempCaseitems = new Gson().fromJson(orderitem.getOrderContent(), CASEITEM[].class);
                         for (int i = 0; i < tempCaseitems.length; i++) {
                             tempCaseitems[i].setOrdered(orderitem.isOrderIsOrdered());
@@ -158,7 +160,7 @@ public class DeskDetailActivity extends BaseActivity implements OrderAdapter.Tap
                 orderitem.setClientType(2);
                 /*直接发送到pad端*/
                 orderitem.setNoticeType((long) 2);
-                orderitem.setShopId((long) UserModel.getInstance().getShopId());
+                orderitem.setShopId(Long.valueOf(UserModel.getInstance().getUserinfo().getShopId()));
                 orderitem.setDeskId((long) deskItem.getDeskId());
                 orderitem.setDeskNum(deskItem.getDeskName());
                 orderitem.setOrderPrice(String.valueOf(totalPrice));
@@ -173,7 +175,7 @@ public class DeskDetailActivity extends BaseActivity implements OrderAdapter.Tap
 
                     @Override
                     public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
-                        if (response.getStatue() == 0) {
+                        if (response.getStatus() == 0) {
                             hud.dismiss();
                             ((TextView) v).setText(getResources().getString(R.string.ordered));
                             v.setBackgroundColor(getResources().getColor(R.color.gray));
@@ -194,7 +196,6 @@ public class DeskDetailActivity extends BaseActivity implements OrderAdapter.Tap
 
     @Override
     public void setCenterTitle() {
-        setTitleStr("详情");
     }
 
     @Override

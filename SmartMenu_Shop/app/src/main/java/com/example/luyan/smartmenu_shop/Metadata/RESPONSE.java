@@ -11,12 +11,12 @@ import java.util.List;
  */
 
 public class RESPONSE<T> implements Parcelable{
-    private int statue;//返回状态信息
+    private int status;//返回状态信息
     private String msg;//返回信息
-    private ArrayList<T> data;//返回数据
+    private T data;//返回数据
 
     protected RESPONSE(Parcel in) {
-        statue = in.readInt();
+        status = in.readInt();
         msg = in.readString();
     }
 
@@ -39,16 +39,16 @@ public class RESPONSE<T> implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(statue);
+        parcel.writeInt(status);
         parcel.writeString(msg);
     }
 
-    public int getStatue() {
-        return statue;
+    public int getStatus() {
+        return status;
     }
 
-    public void setStatue(int statue) {
-        this.statue = statue;
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public String getMsg() {
@@ -59,11 +59,11 @@ public class RESPONSE<T> implements Parcelable{
         this.msg = msg;
     }
 
-    public ArrayList<T> getData() {
+    public T getData() {
         return data;
     }
 
-    public void setData(ArrayList<T> data) {
+    public void setData(T data) {
         this.data = data;
     }
 }

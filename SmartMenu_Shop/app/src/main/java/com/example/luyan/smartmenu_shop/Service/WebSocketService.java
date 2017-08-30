@@ -104,7 +104,7 @@ public class WebSocketService extends Service {
                     WebSocketService.isClosed = false;
                     NOTICEITEM noticeitem = new NOTICEITEM();
                     noticeitem.setSendTag(true);
-                    noticeitem.setShopId((long) UserModel.getInstance().getShopId());
+                    noticeitem.setShopId(Long.valueOf(UserModel.getInstance().getUserinfo().getShopId()));
                     noticeitem.setClientType(1);
                     sendMsg(new Gson().toJson(noticeitem, NOTICEITEM.class));
                 }
