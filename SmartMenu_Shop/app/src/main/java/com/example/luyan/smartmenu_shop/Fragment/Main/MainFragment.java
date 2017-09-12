@@ -1,32 +1,51 @@
 package com.example.luyan.smartmenu_shop.Fragment.Main;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
+import com.example.luyan.smartmenu_shop.Activity.Desk.DeskDetailActivity;
+import com.example.luyan.smartmenu_shop.Activity.MainActivity;
 import com.example.luyan.smartmenu_shop.Fragment.BaseFragment;
 import com.example.luyan.smartmenu_shop.Metadata.NOTICEITEM;
 import com.example.luyan.smartmenu_shop.Metadata.ORDERITEM;
+import com.example.luyan.smartmenu_shop.Metadata.RESPONSE;
 import com.example.luyan.smartmenu_shop.Metadata.RESULT;
+import com.example.luyan.smartmenu_shop.Model.NoticeModel;
+import com.example.luyan.smartmenu_shop.Model.OrderModel;
 import com.example.luyan.smartmenu_shop.R;
 import com.example.luyan.smartmenu_shop.Service.WebSocketService;
+import com.example.luyan.smartmenu_shop.Utils.NotificationUtils;
+import com.example.luyan.smartmenu_shop.Utils.ZHHttpUtils.ZHHttpCallBack;
+import com.example.luyan.smartmenu_shop.Widgt.SMDialog;
 import com.example.luyan.smartmenu_shop.Widgt.ToastWidgt;
 import com.flyco.tablayout.SlidingTabLayout;
 import com.flyco.tablayout.widget.MsgView;
 import com.google.gson.Gson;
+import com.kaopiz.kprogresshud.KProgressHUD;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import de.tavendo.autobahn.WebSocketHandler;
+
+import static android.content.Context.NOTIFICATION_SERVICE;
 
 /**
  * Created by luyan on 26/05/2017.
@@ -49,13 +68,24 @@ public class MainFragment extends BaseFragment implements NoticeFragment.NoticeD
     private int orderedUnreadNums;//已接单消息未读个数;
 
     private boolean isLoaded = false;//是否加载过
+    private int pageIndex = 0;//页面index
+
+    private KProgressHUD hud;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setContentLayout(R.layout.fragment_main);
+
+        hud = KProgressHUD.create(getActivity())
+                .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setCancellable(true)
+                .setAnimationSpeed(2)
+                .setDimAmount(0.5f);
+
         initTabs();
         initWebSocket();
+        NotificationUtils.initNotify(getActivity());
     }
 
     private void initWebSocket() {
@@ -77,6 +107,8 @@ public class MainFragment extends BaseFragment implements NoticeFragment.NoticeD
                             noticeUnreadNums = noticeFragment.getUnreadNums();
                             noticeUnreadNums++;
                             noticeFragment.setUnreadNums(noticeUnreadNums);
+
+                            NotificationUtils.sendNotify(NotificationUtils.configNotify(noticeitem));
                             break;
 
                         /*订单*/
@@ -87,6 +119,8 @@ public class MainFragment extends BaseFragment implements NoticeFragment.NoticeD
                             orderUnreadNums = orderFragment.getUnreadNums();
                             orderUnreadNums++;
                             orderFragment.setUnreadNums(orderUnreadNums);
+
+                            NotificationUtils.sendNotify(NotificationUtils.configNotify(orderitem));
                             break;
 
                         /*消息返回*/
@@ -101,6 +135,7 @@ public class MainFragment extends BaseFragment implements NoticeFragment.NoticeD
                                         noticeUnreadNums = noticeFragment.getUnreadNums();
                                         noticeUnreadNums--;
                                         noticeFragment.setUnreadNums(noticeUnreadNums);
+
                                         break;
 
                                     //订单
@@ -157,6 +192,7 @@ public class MainFragment extends BaseFragment implements NoticeFragment.NoticeD
                         isLoaded = true;
                     }
                 }
+                pageIndex = position;
             }
 
             @Override
@@ -211,7 +247,7 @@ public class MainFragment extends BaseFragment implements NoticeFragment.NoticeD
             tabLayout.showDot(1);
             tabLayout.setMsgMargin(1, 55, 0);
         } else {
-            tabLayout.hideMsg(0);
+            tabLayout.hideMsg(1);
         }
     }
 
@@ -261,7 +297,7 @@ public class MainFragment extends BaseFragment implements NoticeFragment.NoticeD
 
     @Override
     public void setRightContent() {
-
+        setRightContent(getActivity().getResources().getString(R.string.clear));
     }
 
     @Override
@@ -271,6 +307,80 @@ public class MainFragment extends BaseFragment implements NoticeFragment.NoticeD
 
     @Override
     public void tapRightNaviBar() {
+        final SMDialog sm = new SMDialog(getActivity());
+        sm.setTitle(getResources().getString(R.string.tips));
+        switch (pageIndex){
+            case 0:
+                sm.setMessage("确定清空消息么?");
+                break;
 
+            case 1:
+                sm.setMessage("确定清空订单么?");
+                break;
+        }
+
+
+        sm.setPositiveButton(getResources().getString(R.string.confirm), new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                switch (pageIndex){
+
+                    case 0:
+                        hud.show();
+                        NoticeModel.getInstance().clearNotices(new ZHHttpCallBack<RESPONSE>() {
+                            @Override
+                            public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
+                                hud.dismiss();
+                                if (response.getStatus() == 0){
+                                    tabLayout.hideMsg(0);
+                                    noticeFragment.clearNotices();
+                                    ToastWidgt.showWithInfo(getActivity(), response.getMsg(),Toast.LENGTH_SHORT);
+                                } else {
+                                    ToastWidgt.showWithInfo(getActivity(), response.getMsg(),Toast.LENGTH_SHORT);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(int statusCode, String rawJsonResponse, RESPONSE response) {
+
+                            }
+                        });
+                        break;
+
+                    case 1:
+                        hud.show();
+                        OrderModel.getInstance().clearOrders(new ZHHttpCallBack<RESPONSE>() {
+                            @Override
+                            public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
+                                hud.dismiss();
+                                if (response.getStatus() == 0){
+                                    tabLayout.hideMsg(1);
+                                    orderFragment.clearNotices();
+                                    ToastWidgt.showWithInfo(getActivity(), response.getMsg(),Toast.LENGTH_SHORT);
+                                } else {
+                                    ToastWidgt.showWithInfo(getActivity(), response.getMsg(),Toast.LENGTH_SHORT);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(int statusCode, String rawJsonResponse, RESPONSE response) {
+
+                            }
+                        });
+                        break;
+                }
+                sm.dismiss();
+            }
+        });
+
+        sm.setNegativeButton(getResources().getString(R.string.cancel), new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                sm.dismiss();
+            }
+        });
     }
 }

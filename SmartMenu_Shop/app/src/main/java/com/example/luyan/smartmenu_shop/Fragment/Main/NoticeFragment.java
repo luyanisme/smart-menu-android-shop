@@ -72,7 +72,7 @@ public class NoticeFragment extends Fragment {
         refreshView.setXRefreshViewListener(new XRefreshView.XRefreshViewListener() {
             @Override
             public void onRefresh() {
-                NoticeModel.getInstance().firstPage(new ZHHttpCallBack<RESPONSE<NOTICEITEM>>() {
+                NoticeModel.getInstance().firstPage(new ZHHttpCallBack<RESPONSE<List<NOTICEITEM>>>() {
                     @Override
                     public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
                         if (response.getStatus() == 0) {
@@ -81,7 +81,6 @@ public class NoticeFragment extends Fragment {
                             noticeAdapter.notifyDataSetChanged();
                             refreshView.stopRefresh();
                             statistics();
-                            hud.dismiss();
                         }
                     }
 
@@ -237,4 +236,10 @@ public class NoticeFragment extends Fragment {
         public void noticeMsgNumChange(int unreadNum);
     }
 
+    public void clearNotices(){
+        unreadNums = 0;
+        this.noticeitems.clear();
+        noticeAdapter.notifyDataSetChanged();
+        
+    }
 }

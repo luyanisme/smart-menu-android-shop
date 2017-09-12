@@ -224,4 +224,9 @@ public class OrderFragment extends Fragment {
         public void orderMsgNumChange(int unreadNum);
     }
 
+    public void clearNotices(){
+        unreadNums = 0;
+        this.orderitems.clear();
+        orderAdapter.notifyDataSetChanged();
+    }
 }

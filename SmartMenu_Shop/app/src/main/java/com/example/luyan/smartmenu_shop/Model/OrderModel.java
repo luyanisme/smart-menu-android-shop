@@ -71,4 +71,8 @@ public class OrderModel {
                 "&pageSize=" + pageSize +
                 "&startDate=" + startDate +
                 "&endDate=" + endDate, null, httpCallBack);    }
+
+    public void clearOrders(ZHHttpCallBack httpCallBack) {
+        ZHHttpHelper.getInstance().get(ServerConfig.HTTP + "clearOrders?shopId="+UserModel.getInstance().getUserinfo().getShopId(), null, httpCallBack);
+    }
 }
