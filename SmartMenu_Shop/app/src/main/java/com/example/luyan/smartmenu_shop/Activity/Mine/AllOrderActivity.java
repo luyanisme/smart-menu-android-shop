@@ -1,5 +1,6 @@
 package com.example.luyan.smartmenu_shop.Activity.Mine;
 
+import android.app.DatePickerDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -21,6 +22,7 @@ import com.example.luyan.smartmenu_shop.Utils.ZHHttpUtils.ZHHttpCallBack;
 import com.kaopiz.kprogresshud.KProgressHUD;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
@@ -69,7 +71,7 @@ public class AllOrderActivity extends BaseActivity {
             public void onFailure(int statusCode, String rawJsonResponse, RESPONSE response) {
 
             }
-        }, DateUtils.getCurrentDate(),DateUtils.getTomorrowDate(DateUtils.getCurrentDate()));
+        }, DateUtils.getCurrentDate(), DateUtils.getTomorrowDate(DateUtils.getCurrentDate()));
     }
 
     private void initList() {
@@ -108,6 +110,38 @@ public class AllOrderActivity extends BaseActivity {
 
     @Override
     public void tapRightNaviBar(View view) {
+        /*显示日历*/
+        DatePickerDialog.OnDateSetListener listener = new DatePickerDialog.OnDateSetListener() {
+
+            @Override
+            public void onDateSet(android.widget.DatePicker datePicker, int i, int i1, int i2) {
+                hud.show();
+                OrderModel.getInstance().firstAllOrderedPage(new ZHHttpCallBack<RESPONSE<List<ORDERITEM>>>() {
+                    @Override
+                    public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
+                        hud.dismiss();
+                        if (response.getStatus() == 0) {
+                            orderitems.addAll((ArrayList<ORDERITEM>) response.getData());
+                            allOrderedAdapter.notifyDataSetChanged();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, String rawJsonResponse, RESPONSE response) {
+
+                    }
+                }, i + "-" + i1 + "-" + i2, i + "-" + i1 + "-" + i2 + 1);
+            }
+
+        };
+
+        final Calendar c = Calendar.getInstance();
+        int mYear = c.get(Calendar.YEAR);
+        int mMonth = c.get(Calendar.MONTH);
+        int mDay = c.get(Calendar.DAY_OF_MONTH);
+        new DatePickerDialog(AllOrderActivity.this,
+                listener,
+                mYear, mMonth, mDay).show();
 
     }
 }

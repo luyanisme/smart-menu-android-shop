@@ -240,6 +240,6 @@ public class NoticeFragment extends Fragment {
         unreadNums = 0;
         this.noticeitems.clear();
         noticeAdapter.notifyDataSetChanged();
-        
+
     }
 }
