@@ -336,6 +336,7 @@ public class DeskFragment extends BaseFragment {
             public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
                 if (response.getStatus() == 0) {
                     ArrayList<DESKCATEITEM> deskcateitems = (ArrayList<DESKCATEITEM>) response.getData();
+                    deskitems.clear();
                     for (int i = 0; i < deskcateitems.size(); i++) {
                         deskitems.addAll(deskcateitems.get(i).getDesks());
                         CONDITIONITEM condition = new CONDITIONITEM();
@@ -359,6 +360,11 @@ public class DeskFragment extends BaseFragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
     public void setCenterTitle() {
         setTitleStr(getActivity().getResources().getString(R.string.desks));
     }
@@ -370,7 +376,7 @@ public class DeskFragment extends BaseFragment {
 
     @Override
     public void setRightContent() {
-
+        setRightContent(R.drawable.refresh_icon);
     }
 
     @Override
@@ -380,7 +386,34 @@ public class DeskFragment extends BaseFragment {
 
     @Override
     public void tapRightNaviBar() {
+        hud.show();
+        selectItems.clear();
+        DeskModel.getInstance().getDesk(new ZHHttpCallBack<RESPONSE<List<DESKCATEITEM>>>() {
+            @Override
+            public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
+                if (response.getStatus() == 0) {
+                    ArrayList<DESKCATEITEM> deskcateitems = (ArrayList<DESKCATEITEM>) response.getData();
+                    deskitems.clear();
+                    for (int i = 0; i < deskcateitems.size(); i++) {
+                        deskitems.addAll(deskcateitems.get(i).getDesks());
+                        CONDITIONITEM condition = new CONDITIONITEM();
+                        condition.setStatueCode(deskcateitems.get(i).getDeskCateId());
+                        condition.setStatue(deskcateitems.get(i).getDeskCateName());
+                        areas.add(condition);
+                    }
+                    selectItems.addAll(deskitems);
+                    deskAdapter.notifyDataSetChanged();
+                    hud.dismiss();
+                }
+            }
 
+            @Override
+            public void onFailure(int statusCode, String rawJsonResponse, RESPONSE response) {
+                if (response.getStatus() == 1) {
+                    ToastWidgt.showWithInfo(getActivity(), response.getMsg(), Toast.LENGTH_SHORT);
+                }
+            }
+        }, Integer.valueOf(UserModel.getInstance().getUserinfo().getShopId()));
     }
 
 }

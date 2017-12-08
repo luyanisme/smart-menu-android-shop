@@ -21,6 +21,7 @@ import com.example.luyan.smartmenu_shop.R;
 import com.example.luyan.smartmenu_shop.Activity.MainActivity;
 import com.example.luyan.smartmenu_shop.Utils.IntentUtils;
 import com.example.luyan.smartmenu_shop.Utils.AESUtils;
+import com.example.luyan.smartmenu_shop.Utils.SpeechUtils;
 import com.example.luyan.smartmenu_shop.Utils.ZHHttpUtils.ZHHttpCallBack;
 import com.example.luyan.smartmenu_shop.Widgt.ToastWidgt;
 import com.example.luyan.smartmenu_shop.Widgt.UIEditTextWithDelete;
@@ -47,11 +48,12 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
         usp = this.getSharedPreferences("userinfo", Context.MODE_PRIVATE);
         userName.setText(usp.getString("uname", null));
-        if (usp.getBoolean("checkboxBoolean", false))
-        {
+        if (usp.getBoolean("checkboxBoolean", false)) {
             password.setText(usp.getString("upswd", null));
             checkboxButton.setChecked(true);
         }
+
+        SpeechUtils.initSpeech(this);
     }
 
     /*清除状态栏背景色*/
@@ -73,8 +75,14 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SpeechUtils.release();
+    }
+
+    @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.login:
                 final KProgressHUD hud = KProgressHUD.create(LoginActivity.this)
                         .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
@@ -137,8 +145,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
                     }
                 });
-
-            break;
+                break;
         }
     }
 }

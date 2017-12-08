@@ -20,14 +20,12 @@ public class AESUtils {
 
     private static final String CIPHER_ALGORITHM = "AES/ECB/PKCS7Padding";
 
-
     private static Key toKey(byte[] key) throws Exception {
         //实例化DES密钥
         //生成密钥
         SecretKey secretKey = new SecretKeySpec(key, KEY_ALGORITHM);
         return secretKey;
     }
-
 
     public static String bytes2String(byte buf[]) {
         StringBuffer sb = new StringBuffer();

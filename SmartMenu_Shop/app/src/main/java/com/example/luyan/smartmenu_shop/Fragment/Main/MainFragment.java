@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.example.luyan.smartmenu_shop.Activity.Desk.DeskDetailActivity;
 import com.example.luyan.smartmenu_shop.Activity.MainActivity;
+import com.example.luyan.smartmenu_shop.Common.ServerConfig;
 import com.example.luyan.smartmenu_shop.Fragment.BaseFragment;
 import com.example.luyan.smartmenu_shop.Metadata.NOTICEITEM;
 import com.example.luyan.smartmenu_shop.Metadata.ORDERITEM;
@@ -29,9 +30,11 @@ import com.example.luyan.smartmenu_shop.Metadata.RESPONSE;
 import com.example.luyan.smartmenu_shop.Metadata.RESULT;
 import com.example.luyan.smartmenu_shop.Model.NoticeModel;
 import com.example.luyan.smartmenu_shop.Model.OrderModel;
+import com.example.luyan.smartmenu_shop.Model.UserModel;
 import com.example.luyan.smartmenu_shop.R;
 import com.example.luyan.smartmenu_shop.Service.WebSocketService;
 import com.example.luyan.smartmenu_shop.Utils.NotificationUtils;
+import com.example.luyan.smartmenu_shop.Utils.SpeechUtils;
 import com.example.luyan.smartmenu_shop.Utils.ZHHttpUtils.ZHHttpCallBack;
 import com.example.luyan.smartmenu_shop.Widgt.SMDialog;
 import com.example.luyan.smartmenu_shop.Widgt.ToastWidgt;
@@ -40,8 +43,31 @@ import com.flyco.tablayout.widget.MsgView;
 import com.google.gson.Gson;
 import com.kaopiz.kprogresshud.KProgressHUD;
 
+import org.java_websocket.WebSocketImpl;
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
+import javax.security.cert.X509Certificate;
 
 import de.tavendo.autobahn.WebSocketHandler;
 
@@ -84,11 +110,16 @@ public class MainFragment extends BaseFragment implements NoticeFragment.NoticeD
                 .setDimAmount(0.5f);
 
         initTabs();
-        initWebSocket();
+        try {
+            initWebSocket();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         NotificationUtils.initNotify(getActivity());
     }
 
     private void initWebSocket() {
+
         websocketServiceIntent = new Intent(getActivity(), WebSocketService.class);
         getActivity().startService(websocketServiceIntent);
         WebSocketService.webSocketConnect();
@@ -109,18 +140,20 @@ public class MainFragment extends BaseFragment implements NoticeFragment.NoticeD
                             noticeFragment.setUnreadNums(noticeUnreadNums);
 
                             NotificationUtils.sendNotify(NotificationUtils.configNotify(noticeitem));
+                            SpeechUtils.speech(noticeitem.getDeskNum()+noticeitem.getNoticeContent());
                             break;
 
                         /*订单*/
                         case 1:
                             ORDERITEM orderitem = new Gson().fromJson(msg.getData().get("notice").toString(), ORDERITEM.class);
-                            //收到notice
+                            //收到order
                             orderFragment.addOrderItem(orderitem);
                             orderUnreadNums = orderFragment.getUnreadNums();
                             orderUnreadNums++;
                             orderFragment.setUnreadNums(orderUnreadNums);
 
                             NotificationUtils.sendNotify(NotificationUtils.configNotify(orderitem));
+                            SpeechUtils.speech(orderitem.getDeskNum()+orderitem.getOrderContent());
                             break;
 
                         /*消息返回*/
@@ -325,7 +358,6 @@ public class MainFragment extends BaseFragment implements NoticeFragment.NoticeD
             public void onClick(View v) {
                 // TODO Auto-generated method stub
                 switch (pageIndex){
-
                     case 0:
                         hud.show();
                         NoticeModel.getInstance().clearNotices(new ZHHttpCallBack<RESPONSE>() {

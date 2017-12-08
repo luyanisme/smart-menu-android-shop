@@ -61,7 +61,7 @@ public class WebSocketService extends Service {
                             webSocketConnection.disconnect();
                         }
                         if (isClosed) {
-//                            webSocketConnect();
+                            webSocketConnect();
                         }
                     }
 
@@ -132,9 +132,9 @@ public class WebSocketService extends Service {
                         case 2:
                             break;
                         case 3://手动断开连接
-//                            if (!isExitApp) {
-//                                webSocketConnect();
-//                            }
+                            if (!isExitApp) {
+                                webSocketConnect();
+                            }
                             break;
                         case 4:
                             break;

@@ -62,6 +62,7 @@ public class AllOrderActivity extends BaseActivity {
             public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
                 hud.dismiss();
                 if (response.getStatus() == 0) {
+                    orderitems.clear();
                     orderitems.addAll((ArrayList<ORDERITEM>) response.getData());
                     allOrderedAdapter.notifyDataSetChanged();
                 }
@@ -116,11 +117,13 @@ public class AllOrderActivity extends BaseActivity {
             @Override
             public void onDateSet(android.widget.DatePicker datePicker, int i, int i1, int i2) {
                 hud.show();
+                setTitleStr(i + "年" + (i1 + 1) + "月" + i2 + "日");
                 OrderModel.getInstance().firstAllOrderedPage(new ZHHttpCallBack<RESPONSE<List<ORDERITEM>>>() {
                     @Override
                     public void onSuccess(int statusCode, String rawJsonResponse, RESPONSE response) {
                         hud.dismiss();
                         if (response.getStatus() == 0) {
+                            orderitems.clear();
                             orderitems.addAll((ArrayList<ORDERITEM>) response.getData());
                             allOrderedAdapter.notifyDataSetChanged();
                         }
@@ -130,7 +133,7 @@ public class AllOrderActivity extends BaseActivity {
                     public void onFailure(int statusCode, String rawJsonResponse, RESPONSE response) {
 
                     }
-                }, i + "-" + i1 + "-" + i2, i + "-" + i1 + "-" + i2 + 1);
+                }, i + "-" + (i1 + 1) + "-" + i2, i + "-" + (i1 + 1) + "-" + (i2 + 1));
             }
 
         };
@@ -140,8 +143,7 @@ public class AllOrderActivity extends BaseActivity {
         int mMonth = c.get(Calendar.MONTH);
         int mDay = c.get(Calendar.DAY_OF_MONTH);
         new DatePickerDialog(AllOrderActivity.this,
-                listener,
-                mYear, mMonth, mDay).show();
+                listener, mYear, mMonth, mDay).show();
 
     }
 }
